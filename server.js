@@ -2,7 +2,15 @@ const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
 const logger = require('morgan');
+const swaggerUi = require('swagger-ui-express');
+const swaggerJSDoc = require('swagger-jsdoc');
+const jsdocConfig = require('./config/jsdoc');
 const { notFound, errorHandler } = require('./api/middleware/error');
+
+const swaggerSpec = swaggerJSDoc(jsdocConfig);
+const swaggerUIOptions = {
+  explorer: true,
+};
 
 const server = express();
 
@@ -15,6 +23,8 @@ server.use(
 );
 server.use(express.json());
 server.use(process.env.NODE_ENV === 'production' ? logger('common') : logger('dev'));
+
+server.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUIOptions));
 
 // 404 not found middleware
 server.use(notFound);
