@@ -4,7 +4,9 @@
   "description": "express server with postgresql backend for managing data for a reading tracker app",
   "main": "index.js",
   "scripts": {
-    "test": "jest --watchAll"
+    "test": "jest --watchAll",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "keywords": [
     "node",
