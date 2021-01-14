@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const UserModel = require('../models/user.model');
 
 const requiredUserInfo = ['uuid', 'username', 'email', 'password', 'avatar_url'];
 
@@ -25,9 +26,9 @@ const hashPassword = async (req, res, next) => {
         next();
       }
     } catch (err) {
-      const error = new Error(err);
-      error.statusCode(500);
-      error.message = 'Error hashing password';
+      const error = new Error('Error hashing password');
+      res.status(500);
+      next(error);
     }
   }
 };
@@ -40,22 +41,50 @@ const verifyToken = (req, res, next) => {
   if (token) {
     jwt.verify(token, secret, (err, decodedToken) => {
       if (err) {
-        const error = new Error(err);
-        error.statusCode = 401;
-        error.message = 'Invalid Token';
+        const error = new Error('invalid token');
+        res.status(401);
         next(error);
       }
       req.decodedToken = decodedToken;
       next();
     });
   }
-  const error = new Error();
-  error.statusCode(400);
-  error.message = 'No token provided in authorization header';
+  const error = new Error('No token provided in authorization header');
+  res.status(400);
+  next(error);
+};
+
+const verifyUserLogin = async (req, res, next) => {
+  const { username, password } = req.body;
+
+  if (username && password) {
+    try {
+      const user = await UserModel.getUserBy({ username });
+      if (user) {
+        const validPassword = await bcrypt.compare(password, user.password);
+        if (!validPassword) {
+          const error = new Error('Incorrect username or password');
+          res.status(401);
+          next(error);
+        }
+        req.user = { username, password: user.password, uuid: user.uuid };
+        next();
+      }
+      const error = new Error('Incorrect username or password');
+      res.status(401);
+      next(error);
+    } catch (error) {
+      next(error);
+    }
+  }
+  const error = new Error('Username or password field missing from body');
+  res.status(400);
+  next(error);
 };
 
 module.exports = {
   verifyUserRegisterBody,
   hashPassword,
   verifyToken,
+  verifyUserLogin,
 };
