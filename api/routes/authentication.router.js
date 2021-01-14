@@ -1,5 +1,8 @@
 /* eslint-disable max-len */
 const router = require('express').Router();
+const UserModel = require('../models/user.model');
+const { verifyUserBody, hashPassword, verifyUserUnique } = require('../middleware/authentication');
+const generateToken = require('../utils/generateToken');
 
 /**
  * @swagger
@@ -44,7 +47,7 @@ const router = require('express').Router();
  *        avatar_url:
  *          'https://upload.wikimedia.org/wikipedia/en/thumb/2/20/WilRiker.jpg/220px-WilRiker.jpg'
  *
- * /register:
+ * /auth/register:
  *  post:
  *    description: Create new user
  *    tags:
@@ -65,5 +68,17 @@ const router = require('express').Router();
  *      400:
  *        description: Data missing from request body __missing_property__
  */
+router.post('/register', verifyUserBody, hashPassword, async (req, res, next) => {
+  const { user } = req;
+  try {
+    const registered = await UserModel.create(user);
+    if (registered) {
+      const token = await generateToken(registered);
+      res.status(201).json({ token });
+    }
+  } catch (error) {
+    next(error);
+  }
+});
 
 module.exports = router;
