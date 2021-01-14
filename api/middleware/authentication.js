@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 
 const requiredUserInfo = ['uuid', 'username', 'email', 'password', 'avatar_url'];
 
-const verifyUserBody = (req, res, next) => {
+const verifyUserRegisterBody = (req, res, next) => {
   requiredUserInfo.forEach((property) => {
     if (!Object.prototype.hasOwnProperty.call(req.body, property)) {
       const error = new Error();
@@ -55,7 +55,7 @@ const verifyToken = (req, res, next) => {
 };
 
 module.exports = {
-  verifyUserBody,
+  verifyUserRegisterBody,
   hashPassword,
   verifyToken,
 };

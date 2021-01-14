@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 const router = require('express').Router();
 const UserModel = require('../models/user.model');
-const { verifyUserBody, hashPassword, verifyUserUnique } = require('../middleware/authentication');
+const { verifyUserRegisterBody, hashPassword } = require('../middleware/authentication');
 const generateToken = require('../utils/generateToken');
 
 /**
@@ -68,7 +68,7 @@ const generateToken = require('../utils/generateToken');
  *      400:
  *        description: Data missing from request body __missing_property__
  */
-router.post('/register', verifyUserBody, hashPassword, async (req, res, next) => {
+router.post('/register', verifyUserRegisterBody, hashPassword, async (req, res, next) => {
   const { user } = req;
   try {
     const registered = await UserModel.create(user);
@@ -120,5 +120,7 @@ router.post('/register', verifyUserBody, hashPassword, async (req, res, next) =>
  *      400:
  *        description: incorrect username or password
  */
+
+router.post('/login', (req, res, next) => {});
 
 module.exports = router;
