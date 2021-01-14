@@ -16,6 +16,18 @@ After the database is created in your psql service create a .env file in the roo
 
 Install node dependencies with the command `npm install`
 
+### Environment variables
+
+This repo uses environment variables to help maintain security. An example of the .env file to get this repo set up:
+```
+NODE_ENV=development
+PORT=1337
+DATABASE_URL=postgres://psqlUsername:psqlUserpass@localhost:5432/dbname
+SEEDED_PASS_ONE=apassword
+SEEDED_PASS_TWO=anotherpassword
+SEEDED_PASS_THREE=surpriseAnotherpassword
+SALT=10
+```
 
 ### Data Migrations
 
