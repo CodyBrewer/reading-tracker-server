@@ -1,7 +1,11 @@
 /* eslint-disable max-len */
 const router = require('express').Router();
 const UserModel = require('../models/user.model');
-const { verifyUserRegisterBody, hashPassword } = require('../middleware/authentication');
+const {
+  verifyUserRegisterBody,
+  hashPassword,
+  verifyUserLogin,
+} = require('../middleware/authentication');
 const generateToken = require('../utils/generateToken');
 
 /**
@@ -117,10 +121,16 @@ router.post('/register', verifyUserRegisterBody, hashPassword, async (req, res, 
  *          application/json:
  *            schema:
  *              $ref: '#/components/schemas/Authentication'
+ *      401:
+ *        description: Incorrect username or password
  *      400:
- *        description: incorrect username or password
+ *        description: Username or password missing from body
  */
-
-router.post('/login', (req, res, next) => {});
+router.post('/login', verifyUserLogin, (req, res) => {
+  if (req.user) {
+    const token = generateToken(req.user);
+    res.status(200).json({ token });
+  }
+});
 
 module.exports = router;
