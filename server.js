@@ -7,7 +7,7 @@ const swaggerJSDoc = require('swagger-jsdoc');
 const jsdocConfig = require('./config/jsdoc');
 const { notFound, errorHandler } = require('./api/middleware/error');
 // ###[Routers]###
-const statusRouter = require('./api/routes/status');
+const statusRouter = require('./api/routes/status.router');
 
 const swaggerSpec = swaggerJSDoc(jsdocConfig);
 const swaggerUIOptions = {
