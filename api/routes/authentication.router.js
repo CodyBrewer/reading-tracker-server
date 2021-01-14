@@ -81,4 +81,44 @@ router.post('/register', verifyUserBody, hashPassword, async (req, res, next) =>
   }
 });
 
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *    UserLogin:
+ *      type: object
+ *      required:
+ *        - username
+ *        - password
+ *      properties:
+ *        username:
+ *          type: string
+ *        password:
+ *          type: string
+ *      example:
+ *        username: 'The_Riker'
+ *        password: '@R33allyG00dP@55w0rd'
+ *
+ * /auth/login:
+ *  post:
+ *    description: authenticate existing user
+ *    tags:
+ *      - authentication
+ *    requestBody:
+ *      description: login credentials for existing user
+ *      content:
+ *        application/json:
+ *          schema:
+ *            $ref: '#/components/schemas/UserLogin'
+ *    responses:
+ *      200:
+ *        description: token for existing user authentication
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/Authentication'
+ *      400:
+ *        description: incorrect username or password
+ */
+
 module.exports = router;
