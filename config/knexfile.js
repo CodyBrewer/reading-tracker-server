@@ -3,7 +3,8 @@ require('dotenv').config({ path: '../.env' });
 module.exports = {
   development: {
     client: 'pg',
-    connection: process.env.DATABASE_URL,
+    // connection: process.env.DATABASE_URL,
+    connection: `${process.env.DATABASE_URL}?ssl=true`,
     migrations: { directory: '../data/migrations' },
     seeds: { directory: '../data/seeds' },
     ssl: true,
@@ -18,7 +19,12 @@ module.exports = {
 
   production: {
     client: 'pg',
-    connection: `${process.env.DATABASE_URL}?ssl=true`,
+    host: process.env.DATABASE_HOST,
+    port: process.env.DATABASE_PORT,
+    database: process.env.DATABASE_NAME,
+    username: process.env.DATABASE_USERNAME,
+    password: process.env.DATABASE_PASSWORD,
+    ssl: true,
     migrations: { directory: '../data/migrations' },
     seeds: { directory: '../data/seeds' },
   },
