@@ -25,15 +25,11 @@ const generateToken = require('../utils/generateToken');
  *    User:
  *      type: object
  *      required:
- *        - uuid
  *        - username
  *        - email
  *        - password
  *        - avatar_url
  *      properties:
- *        uuid:
- *          type: string
- *          description: uuid v4 string to work as public id for user
  *        username:
  *          type: string
  *        email:
