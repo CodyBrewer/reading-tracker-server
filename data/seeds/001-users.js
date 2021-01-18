@@ -39,6 +39,7 @@ exports.seed = (knex) =>
           password: hashThree,
           avatar_url:
             'https://upload.wikimedia.org/wikipedia/en/thumb/0/09/DataTNG.jpg/220px-DataTNG.jpg',
+          public: false,
         },
       ]),
     );
