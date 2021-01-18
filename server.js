@@ -5,7 +5,7 @@ const logger = require('morgan');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJSDoc = require('swagger-jsdoc');
 const jsdocConfig = require('./config/jsdoc');
-const { notFound, errorHandler } = require('./api/middleware/error');
+const { notFound, errorHandler } = require('./api/middleware/error.middleware');
 // ###[Routers]###
 const statusRouter = require('./api/routes/status.router');
 const authenticationRouter = require('./api/routes/authentication.router');
