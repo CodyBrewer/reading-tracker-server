@@ -36,24 +36,20 @@ const hashPassword = async (req, res, next) => {
 };
 
 const verifyToken = (req, res, next) => {
-  const token = req.headers.authorization;
-
-  const secret = process.env.JWT_SECRET || 'this should be a secret environment variable';
-
-  if (token) {
-    jwt.verify(token, secret, (err, decodedToken) => {
-      if (err) {
-        const error = new Error('invalid token');
-        res.status(401);
-        next(error);
+  const bearerHeader = req.headers.authorization;
+  if (bearerHeader !== undefined) {
+    const bearerToken = bearerHeader.split(' ')[1];
+    jwt.verify(bearerToken, process.env.JWT_SECRET, (err, decodedToken) => {
+      if (err !== null) {
+        res.status(401).json({ error: 'Invalid token' });
+      } else {
+        req.profile = { username: decodedToken.username, uuid: decodedToken.uuid };
+        next();
       }
-      req.decodedToken = decodedToken;
-      next();
     });
+  } else {
+    res.status(403).json({ error: 'missing authorization header' });
   }
-  const error = new Error('No token provided in authorization header');
-  res.status(400);
-  next(error);
 };
 
 const verifyUserLogin = async (req, res, next) => {
