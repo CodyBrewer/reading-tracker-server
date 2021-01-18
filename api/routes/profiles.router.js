@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const UserModel = require('../models/user.model');
+const { verifyToken } = require('../middleware/authentication.middleware');
 
 /**
  * @swagger
@@ -44,11 +45,14 @@ const UserModel = require('../models/user.model');
  *      401:
  *        $ref: '#/components/responses/UnauthorizedError'
  */
-router.get('/', async (req, res, next) => {
+router.get('/', verifyToken, async (req, res, next) => {
   try {
     const publicProfiles = await UserModel.getAllPublic();
-    if (publicProfiles.length) res.status(200).json({ profiles: publicProfiles });
-    res.status(404).json({ error: 'No Profiles' });
+    if (publicProfiles.length) {
+      res.status(200).json({ profiles: publicProfiles });
+    } else {
+      res.status(404).json({ error: 'No Profiles' });
+    }
   } catch (error) {
     next(error);
   }
