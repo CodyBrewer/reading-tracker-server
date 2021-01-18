@@ -5,7 +5,7 @@ const {
   verifyUserRegisterBody,
   hashPassword,
   verifyUserLogin,
-} = require('../middleware/authentication');
+} = require('../middleware/authentication.middleware');
 const generateToken = require('../utils/generateToken');
 
 /**
