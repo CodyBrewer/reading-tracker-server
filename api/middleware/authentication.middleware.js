@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { v4: uuidv4 } = require('uuid');
 const UserModel = require('../models/user.model');
-const {v4: uuidv4 } = require('uuid');
 
 const requiredUserInfo = ['username', 'email', 'password', 'avatar_url'];
 
@@ -15,7 +15,7 @@ const verifyUserRegisterBody = (req, res, next) => {
     }
   });
   req.user = req.body;
-  req.user.uuid = uuidv4()
+  req.user.uuid = uuidv4();
   next();
 };
 
