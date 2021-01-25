@@ -16,7 +16,10 @@ const remove = (id) => {
   db('reading_lists').where({ id }).first().delete();
 };
 
-const getListBooks = (id) => db('reading_list_books').where({ reading_list_id: id });
+const getListBooks = (listId) => db('reading_list_books')
+  .join('books', 'reading_list_books.book_id', 'books.id')
+  .where({ reading_list_id: listId })
+  .select('books.*');
 
 module.exports = {
   create,
