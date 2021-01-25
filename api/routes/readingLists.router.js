@@ -4,12 +4,23 @@ const { verifyToken } = require('../middleware/authentication.middleware');
 
 router.get('/', verifyToken, async (req, res) => {
   try {
-    const lists = await ReadingListsModel.getAllBy({ user_id: req.profile.uuid });
+    const lists = await ReadingListsModel.getAllBy({
+      user_id: req.profile.uuid,
+    });
     const readingLists = await Promise.all(
       lists.map(async (list) => {
         try {
-          const books = await ReadingListsModel.getListBooks(list.id);
+          let books = await ReadingListsModel.getListBooks(list.id);
           if (books.length !== undefined) {
+            books = await Promise.all(
+              books.map(async (book) => {
+                const authors = await ReadingListsModel.getBooksAuthors(
+                  book.id,
+                );
+                const authorNames = authors.map((author) => author.name);
+                return { ...book, authors:authorNames };
+              }),
+            );
             return { ...list, books };
           }
           return { ...list, books: [] };
