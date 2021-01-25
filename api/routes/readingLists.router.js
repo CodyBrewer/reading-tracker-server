@@ -2,6 +2,86 @@ const router = require('express').Router();
 const ReadingListsModel = require('../models/readingLists.model');
 const { verifyToken } = require('../middleware/authentication.middleware');
 
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *    Author:
+ *      type: string
+ *      description: Name of Author
+ *      example: "William Shakespeare"
+ *    Book:
+ *      type: object
+ *      properties:
+ *        id:
+ *          type: integer
+ *          example: 0
+ *        google_id:
+ *          type: string
+ *          description: id used for google books api
+ *          example: "-w3TCwAAQBAJ"
+ *        title:
+ *          type: string
+ *          example: Hamlet
+ *        cover_image:
+ *          type: string
+ *          description: url of cover_image
+ *          example: "https://books.google.com/books/content?id=-w3TCwAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api"
+ *        description:
+ *          type: string
+ *          description: short description of the book
+ *          example: "The acclaimed Shakespeare Play"
+ *        page_count:
+ *          type: integer
+ *          example: 148
+ *        printed_page_count:
+ *          type: integer
+ *          example: 157
+ *        authors:
+ *          type: array
+ *          description: Array of strings of Author Names
+ *          items:
+ *            $ref: '#/components/schemas/Author'
+ *    ReadingList:
+ *      type: object
+ *      properties:
+ *        id:
+ *          type: integer
+ *          example: 0
+ *        user_id:
+ *          type: string
+ *          format: uuid
+ *          description: user public id
+ *          example: "1d9dd170-8757-40ec-9ccf-11e4e3de27b1"
+ *        name:
+ *          type: string
+ *          example: "reading"
+ *        books:
+ *          type: array
+ *          description: array of Book objects that belong to the reading list
+ *          items:
+ *           $ref: '#/components/schemas/Book'
+ *    ReadingLists:
+ *      type: array
+ *      items:
+ *        $ref: '#/components/schemas/ReadingList'
+ *
+ * /readingLists/:
+ *  get:
+ *    description: return reading lists of the logged in user
+ *    tags:
+ *      - readingLists
+ *    responses:
+ *      200:
+ *        description: logged in users reading lists data
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/ReadingLists'
+ *      401:
+ *        $ref: '#/components/responses/UnauthorizedError'
+ */
+
 router.get('/', verifyToken, async (req, res) => {
   try {
     const lists = await ReadingListsModel.getAllBy({
@@ -18,7 +98,7 @@ router.get('/', verifyToken, async (req, res) => {
                   book.id,
                 );
                 const authorNames = authors.map((author) => author.name);
-                return { ...book, authors:authorNames };
+                return { ...book, authors: authorNames };
               }),
             );
             return { ...list, books };
