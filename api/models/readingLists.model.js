@@ -21,12 +21,18 @@ const getListBooks = (listId) => db('reading_list_books')
   .where({ reading_list_id: listId })
   .select('books.*');
 
+const getBooksAuthors = (bookId) => db('author_books')
+  .where({ book_id: bookId })
+  .join('authors', 'authors.id', 'author_books.author_id')
+  .select('authors.name');
+
 module.exports = {
   create,
   getAll,
   getAllBy,
   getById,
   getListBooks,
+  getBooksAuthors,
   update,
   remove,
 };
