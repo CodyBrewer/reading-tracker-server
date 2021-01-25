@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const ReadingListsModel = require('../models/readingLists.model');
 const { verifyToken } = require('../middleware/authentication.middleware');
+const { verify } = require('jsonwebtoken');
 
 /**
  * @swagger
@@ -113,6 +114,60 @@ router.get('/', verifyToken, async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: 'database error' });
   }
+});
+
+/**
+ * @swagger
+ * /readingLists/:
+ *  post:
+ *    description: creating reading list for authenticated user
+ *    tags:
+ *      - readingLists
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            properties:
+ *              name:
+ *                type: string
+ *                description: name of reading list to created
+ *                example: "Want to Read"
+ *    responses:
+ *      201:
+ *        description: created reading list
+ *        content:
+ *          application/json:
+ *            schema:
+ *              properties:
+ *                id:
+ *                  type: integer
+ *                  example: 0
+ *                user_id:
+ *                  type: string
+ *                  format: uuid
+ *                  description: user public id
+ *                  example: "1d9dd170-8757-40ec-9ccf-11e4e3de27b1"
+ *                name:
+ *                  type: string
+ *                  example: "Want to Read"
+ *      401:
+ *        $ref: '#/components/responses/UnauthorizedError'
+ *      400:
+ *        description: "Missing name of reading list"
+ */
+
+router.post('/', verifyToken, async (req, res) => {
+  if (req.body.name) {
+    const list = { user_id: req.profile.uuid, name: req.body.name };
+    try {
+      const created = await ReadingListsModel.create(list);
+      res.status(201).json({ created });
+    } catch (error) {
+      console.error({ error: error.stack });
+      res.status(500).json({ error: 'database error ' });
+    }
+  }
+  res.status(400).json({ error: 'Missing name of reading list' });
 });
 
 module.exports = router;
