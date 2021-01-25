@@ -1,7 +1,6 @@
 const router = require('express').Router();
 const ReadingListsModel = require('../models/readingLists.model');
 const { verifyToken } = require('../middleware/authentication.middleware');
-const { verify } = require('jsonwebtoken');
 
 /**
  * @swagger
@@ -95,9 +94,7 @@ router.get('/', verifyToken, async (req, res) => {
           if (books.length !== undefined) {
             books = await Promise.all(
               books.map(async (book) => {
-                const authors = await ReadingListsModel.getBooksAuthors(
-                  book.id,
-                );
+                const authors = await ReadingListsModel.getBooksAuthors(book.id);
                 const authorNames = authors.map((author) => author.name);
                 return { ...book, authors: authorNames };
               }),
