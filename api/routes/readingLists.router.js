@@ -1,6 +1,11 @@
-const router = require('express').Router();
-const ReadingListsModel = require('../models/readingLists.model');
-const { verifyToken } = require('../middleware/authentication.middleware');
+const router = require('express').Router()
+const ReadingListsModel = require('../models/readingLists.model')
+const { verifyToken } = require('../middleware/authentication.middleware')
+const {
+  verifyBook,
+  verifyBody,
+  verifyAuthors
+} = require('../middleware/readingLists.middleware')
 
 /**
  * @swagger
@@ -85,33 +90,33 @@ const { verifyToken } = require('../middleware/authentication.middleware');
 router.get('/', verifyToken, async (req, res) => {
   try {
     const lists = await ReadingListsModel.getAllBy({
-      user_id: req.profile.uuid,
-    });
+      user_id: res.locals.profile.uuid
+    })
     const readingLists = await Promise.all(
       lists.map(async (list) => {
         try {
-          let books = await ReadingListsModel.getListBooks(list.id);
+          let books = await ReadingListsModel.getListBooks(list.id)
           if (books.length !== undefined) {
             books = await Promise.all(
               books.map(async (book) => {
-                const authors = await ReadingListsModel.getBooksAuthors(book.id);
-                const authorNames = authors.map((author) => author.name);
-                return { ...book, authors: authorNames };
-              }),
-            );
-            return { ...list, books };
+                const authors = await ReadingListsModel.getBooksAuthors(book.id)
+                const authorNames = authors.map((author) => author.name)
+                return { ...book, authors: authorNames }
+              })
+            )
+            return { ...list, books }
           }
-          return { ...list, books: [] };
+          return { ...list, books: [] }
         } catch (error) {
-          return res.status(500).json({ error: 'database error' });
+          return res.status(500).json({ error: 'database error' })
         }
-      }),
-    );
-    res.status(200).json({ readingLists });
+      })
+    )
+    res.status(200).json({ readingLists })
   } catch (error) {
-    res.status(500).json({ error: 'database error' });
+    res.status(500).json({ error: 'database error' })
   }
-});
+})
 
 /**
  * @swagger
@@ -153,18 +158,55 @@ router.get('/', verifyToken, async (req, res) => {
  *        description: "Missing name of reading list"
  */
 
-router.post('/', verifyToken, async (req, res) => {
+router.post('/', verifyToken, async (req, res, next) => {
   if (req.body.name) {
-    const list = { user_id: req.profile.uuid, name: req.body.name };
+    const list = { user_id: res.locals.profile.uuid, name: req.body.name }
     try {
-      const created = await ReadingListsModel.create(list);
-      res.status(201).json({ created });
+      const created = await ReadingListsModel.create(list)
+      res.status(201).json({ created })
     } catch (error) {
-      console.error({ error: error.stack });
-      res.status(500).json({ error: 'database error ' });
+      error.statusCode = 500
+      error.message = 'Error creating reading list'
+      next(error)
     }
   }
-  res.status(400).json({ error: 'Missing name of reading list' });
-});
+  res.status(400).json({ error: 'Missing name of reading list' })
+})
 
-module.exports = router;
+/* This route will be used to add a book to a reading list
+the request body will look like this: {
+"google_id": string, "title": string,
+"cover_image": string, "description": string,
+"page_count": 173 "authors": Array<string>
+} we need to check if the book exists in the books table first
+if it does then we create an entry into the reading_list_books table with the id of the reading_list(grabbed from req.params) and the id of the book.
+if it does not then we need to create an entry into the books table
+then we need to check if each authors are in the authors table if they are
+then we create an entry in the author_books table with the author.id and the book.id then we creat an entry into the reading_list_books table with the id of the reading_list(grabbed from req.params) and the id of the book.
+if they are not then we need to create an entry in the authors table
+then we create an entry in the author_books table with the author.id and the book.id then we create an entry into the reading_list_books table with the id of the reading_list(grabbed from req.params) and the id of the book.
+*/
+router.post(
+  '/:id',
+  verifyToken,
+  verifyBody,
+  verifyBook,
+  verifyAuthors,
+  async (req, res) => {
+    console.log({ origin: 'router.post', locals: res.locals })
+    try {
+      const bookAdded = await ReadingListsModel.addBook(
+        res.locals.book.id,
+        req.params.id
+      )
+      if (bookAdded !== null) {
+        res.status(201).json({ bookAdded })
+      }
+    } catch (error) {
+      console.error({ error: error.stack })
+      res.status(500).json({ error: 'error adding book to reading list' })
+    }
+  }
+)
+
+module.exports = router
