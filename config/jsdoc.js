@@ -7,19 +7,19 @@ module.exports = {
       description: 'reading-tracker-backend',
       license: {
         name: 'MIT',
-        url: 'https://en.wikipedia.org/wiki/MIT_License',
-      },
+        url: 'https://en.wikipedia.org/wiki/MIT_License'
+      }
     },
     tags: [
       {
         name: 'status',
-        description: 'Everything about your status',
-      },
+        description: 'Everything about your status'
+      }
     ],
     components: {
       responses: {
         UnauthorizedError: {
-          description: 'Access token is missing or invalid',
+          description: 'Access token is missing or invalid'
         },
         NotFound: {
           description: 'Not Found',
@@ -31,15 +31,15 @@ module.exports = {
                   message: {
                     type: 'string',
                     description: 'A message about the result',
-                    example: 'Not Found',
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
+                    example: 'Not Found'
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   },
-  apis: ['./api/routes/*.js'],
-};
+  apis: ['./api/routes/*.js']
+}

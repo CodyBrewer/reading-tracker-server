@@ -1,4 +1,4 @@
-const router = require('express').Router();
+const router = require('express').Router()
 
 /**
  * @swagger
@@ -27,8 +27,8 @@ const router = require('express').Router();
  *                }
  */
 router.get('/', (req, res) => {
-  const currentTime = new Date(Date.now());
-  res.send({ message: 'up', current_time: currentTime.toUTCString() });
-});
+  const currentTime = new Date(Date.now())
+  res.send({ message: 'up', current_time: currentTime.toUTCString() })
+})
 
-module.exports = router;
+module.exports = router
