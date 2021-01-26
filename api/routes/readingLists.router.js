@@ -1,7 +1,6 @@
 const router = require('express').Router();
 const ReadingListsModel = require('../models/readingLists.model');
 const { verifyToken } = require('../middleware/authentication.middleware');
-const { verify } = require('jsonwebtoken');
 
 /**
  * @swagger
