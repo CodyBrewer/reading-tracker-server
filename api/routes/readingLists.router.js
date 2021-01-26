@@ -1,15 +1,6 @@
-const router = require('express').Router()
-const ReadingListsModel = require('../models/readingLists.model')
-const ReadingListBooksModel = require('../models/readingListBooks.model')
-const { verifyToken } = require('../middleware/authentication.middleware')
-const {
-  verifyBook,
-  verifyBody,
-  verifyAuthors,
-  verifyAuthorBook,
-  verifyBookUnique,
-  verifyReadingListId
-} = require('../middleware/readingLists.middleware')
+const router = require('express').Router();
+const ReadingListsModel = require('../models/readingLists.model');
+const { verifyToken } = require('../middleware/authentication.middleware');
 
 /**
  * @swagger
