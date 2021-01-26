@@ -7,10 +7,10 @@ const swaggerJSDoc = require('swagger-jsdoc')
 const jsdocConfig = require('./config/jsdoc')
 const { notFound, errorHandler } = require('./api/middleware/error.middleware')
 // ###[Routers]###
-const statusRouter = require('./api/routes/status.router');
-const authenticationRouter = require('./api/routes/authentication.router');
-const profileRouter = require('./api/routes/profiles.router');
-const readingListRouter = require('./api/routes/readingLists.router');
+const statusRouter = require('./api/routes/status.router')
+const authenticationRouter = require('./api/routes/authentication.router')
+const profileRouter = require('./api/routes/profiles.router')
+const readingListRouter = require('./api/routes/readingLists.router')
 
 const swaggerSpec = swaggerJSDoc(jsdocConfig)
 const swaggerUIOptions = {
@@ -38,9 +38,9 @@ server.use(
 )
 
 // application routes
-server.use('/status', statusRouter);
-server.use('/auth', authenticationRouter);
-server.use('/profiles', profileRouter);
+server.use('/status', statusRouter)
+server.use('/auth', authenticationRouter)
+server.use('/profiles', profileRouter)
 server.use('/readingLists', readingListRouter)
 
 // 404 not found middleware
