@@ -1,12 +1,12 @@
 /* eslint-disable max-len */
-const router = require('express').Router();
-const UserModel = require('../models/user.model');
+const router = require('express').Router()
+const UserModel = require('../models/user.model')
 const {
   verifyUserRegisterBody,
   hashPassword,
-  verifyUserLogin,
-} = require('../middleware/authentication.middleware');
-const generateToken = require('../utils/generateToken');
+  verifyUserLogin
+} = require('../middleware/authentication.middleware')
+const generateToken = require('../utils/generateToken')
 
 /**
  * @swagger
@@ -69,17 +69,17 @@ const generateToken = require('../utils/generateToken');
  *        description: Data missing from request body __missing_property__
  */
 router.post('/register', verifyUserRegisterBody, hashPassword, async (req, res, next) => {
-  const { user } = req;
+  const { user } = req
   try {
-    const registered = await UserModel.create(user);
+    const registered = await UserModel.create(user)
     if (registered) {
-      const token = await generateToken(registered);
-      res.status(201).json({ token });
+      const token = await generateToken(registered)
+      res.status(201).json({ token })
     }
   } catch (error) {
-    next(error);
+    next(error)
   }
-});
+})
 
 /**
  * @swagger
@@ -124,9 +124,9 @@ router.post('/register', verifyUserRegisterBody, hashPassword, async (req, res, 
  */
 router.post('/login', verifyUserLogin, (req, res) => {
   if (req.user) {
-    const token = generateToken(req.user);
-    res.status(200).json({ token });
+    const token = generateToken(req.user)
+    res.status(200).json({ token })
   }
-});
+})
 
-module.exports = router;
+module.exports = router
