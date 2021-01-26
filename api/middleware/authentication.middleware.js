@@ -14,18 +14,21 @@ const verifyUserRegisterBody = (req, res, next) => {
       next(error)
     }
   })
-  req.user = req.body
-  req.user.uuid = uuidv4()
-  next()
+  res.locals.user = req.body
+  res.locals.user.uuid = uuidv4()
+  // next()
 }
 
 const hashPassword = async (req, res, next) => {
-  if (req.user) {
+  if (res.locals.user) {
     try {
-      const hash = await bcrypt.hash(req.user.password, Number(process.env.SALT))
-      if (hash !== req.user.password) {
-        req.user.password = hash
-        next()
+      const hash = await bcrypt.hash(
+        res.locals.user.password,
+        Number(process.env.SALT)
+      )
+      if (hash !== res.locals.user.password) {
+        res.locals.user.password = hash
+        // next()
       }
     } catch (err) {
       const error = new Error('Error hashing password')
@@ -43,7 +46,10 @@ const verifyToken = (req, res, next) => {
       if (err !== null) {
         res.status(401).json({ error: 'Invalid token' })
       } else {
-        req.profile = { username: decodedToken.username, uuid: decodedToken.uuid }
+        res.locals.profile = {
+          username: decodedToken.username,
+          uuid: decodedToken.uuid
+        }
         next()
       }
     })
@@ -61,23 +67,29 @@ const verifyUserLogin = async (req, res, next) => {
       if (user) {
         const validPassword = await bcrypt.compare(password, user.password)
         if (!validPassword) {
-          const error = new Error('Incorrect username or password')
-          res.status(401)
+          const error = new Error()
+          error.statusCode = 401
+          error.message = 'Incorrect username or password'
           next(error)
         }
-        req.user = { username, password: user.password, uuid: user.uuid }
+        res.locals.user = { username, password: user.password, uuid: user.uuid }
         next()
+      } else {
+        const error = new Error()
+        error.statusCode = 401
+        error.message = 'Incorrect username or password'
+        next(error)
       }
-      const error = new Error('Incorrect username or password')
-      res.status(401)
-      next(error)
     } catch (error) {
       next(error)
     }
+  } else {
+    console.log({ message: 'hi cody' })
+    const error = new Error()
+    error.statusCode = 400
+    error.message = 'Username or password field missing from body'
+    next(error)
   }
-  const error = new Error('Username or password field missing from body')
-  res.status(400)
-  next(error)
 }
 
 module.exports = {
