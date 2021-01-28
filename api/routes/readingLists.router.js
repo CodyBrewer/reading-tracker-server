@@ -4,7 +4,8 @@ const { verifyToken } = require('../middleware/authentication.middleware')
 const {
   verifyBook,
   verifyBody,
-  verifyAuthors
+  verifyAuthors,
+  verifyAuthorBook
 } = require('../middleware/readingLists.middleware')
 
 /**
@@ -192,8 +193,8 @@ router.post(
   verifyBody,
   verifyBook,
   verifyAuthors,
+  verifyAuthorBook,
   async (req, res) => {
-    console.log({ origin: 'router.post', locals: res.locals })
     try {
       const bookAdded = await ReadingListsModel.addBook(
         res.locals.book.id,
@@ -203,8 +204,9 @@ router.post(
         res.status(201).json({ bookAdded })
       }
     } catch (error) {
-      console.error({ error: error.stack })
-      res.status(500).json({ error: 'error adding book to reading list' })
+      error.statusCode = 500
+      error.message = 'Error adding book to reading list'
+      next(error)
     }
   }
 )
