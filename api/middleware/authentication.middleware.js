@@ -16,7 +16,7 @@ const verifyUserRegisterBody = (req, res, next) => {
   })
   res.locals.user = req.body
   res.locals.user.uuid = uuidv4()
-  // next()
+  next()
 }
 
 const hashPassword = async (req, res, next) => {
@@ -28,11 +28,11 @@ const hashPassword = async (req, res, next) => {
       )
       if (hash !== res.locals.user.password) {
         res.locals.user.password = hash
-        // next()
+        next()
       }
     } catch (err) {
       const error = new Error('Error hashing password')
-      res.status(500)
+      error.statusCode = 500
       next(error)
     }
   }
