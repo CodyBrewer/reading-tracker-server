@@ -1,5 +1,4 @@
 const db = require('../../config/db')
-const AuthorsModel = require('./authors.model')
 
 const getBy = (filter) => db('books').where(filter).select('*')
 
