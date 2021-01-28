@@ -84,7 +84,6 @@ const verifyUserLogin = async (req, res, next) => {
       next(error)
     }
   } else {
-    console.log({ message: 'hi cody' })
     const error = new Error()
     error.statusCode = 400
     error.message = 'Username or password field missing from body'
