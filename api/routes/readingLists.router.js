@@ -1,6 +1,12 @@
-const router = require('express').Router();
-const ReadingListsModel = require('../models/readingLists.model');
-const { verifyToken } = require('../middleware/authentication.middleware');
+const router = require('express').Router()
+const ReadingListsModel = require('../models/readingLists.model')
+const { verifyToken } = require('../middleware/authentication.middleware')
+const {
+  verifyBook,
+  verifyBody,
+  verifyAuthors,
+  verifyAuthorBook
+} = require('../middleware/readingLists.middleware')
 
 /**
  * @swagger
@@ -228,7 +234,7 @@ router.post(
   verifyBookUnique,
   verifyAuthors,
   verifyAuthorBook,
-  async (req, res, next) => {
+  async (req, res) => {
     try {
       await ReadingListBooksModel.addBook(res.locals.book.id, req.params.id)
       res.status(201).json({
