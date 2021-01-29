@@ -41,10 +41,10 @@ const verifyBook = async (req, res, next) => {
           description,
           page_count
         })
-        if (book !== null) {
-          res.local.book = insertedBook
-          next()
+        if (book.length) {
+          res.locals.book = book[0]
         }
+        next()
       } catch (error) {
         error.statusCode = 500
         error.message = 'Error creating new book in database'
@@ -107,9 +107,9 @@ const verifyAuthorBook = async (req, res, next) => {
     res.locals.authorBooks = authorBooks
     next()
   } else {
-    let bookCheck = await AuthorBooksModel.getAuthorBook(authors.id, book.id)
+    let bookCheck = await AuthorBooksModel.getAuthorBook(authors[0].id, book.id)
     if (!bookCheck) {
-      bookCheck = await AuthorBooksModel.addBook(authors.id, book.id)
+      bookCheck = await AuthorBooksModel.addBook(authors[0].id, book.id)
     }
     res.locals.authorBooks = bookCheck
     next()
