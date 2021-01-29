@@ -129,10 +129,32 @@ const verifyReadingListId = async (req, res, next) => {
   }
 }
 
+const verifyBookUnique = async (req, res, next) => {
+  const { book } = res.locals
+  try {
+    const [readingListBook] = await ReadingListBooksModel.getBy({
+      book_id: book.id,
+      reading_list_id: req.params.id
+    })
+    if (readingListBook !== undefined) {
+      const error = new Error('Book already in reading list')
+      error.statusCode = 409
+      next(error)
+    } else {
+      next()
+    }
+  } catch (error) {
+    error.statusCode = 500
+    error.message = 'Error checking if book is in reading list already'
+    next(error)
+  }
+}
+
 module.exports = {
   verifyBody,
   verifyBook,
   verifyAuthors,
   verifyAuthorBook,
-  verifyReadingListId
+  verifyReadingListId,
+  verifyBookUnique
 }
