@@ -76,10 +76,8 @@ router.post(
     const { user } = res.locals
     try {
       const registered = await UserModel.create(user)
-      if (registered) {
-        const token = await generateToken(registered)
-        res.status(201).json({ token })
-      }
+      const token = await generateToken(registered)
+      res.status(201).json({ token })
     } catch (error) {
       next(error)
     }
