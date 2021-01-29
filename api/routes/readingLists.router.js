@@ -1,11 +1,14 @@
 const router = require('express').Router()
 const ReadingListsModel = require('../models/readingLists.model')
+const ReadingListBooksModel = require('../models/readingListBooks.model')
 const { verifyToken } = require('../middleware/authentication.middleware')
 const {
   verifyBook,
   verifyBody,
   verifyAuthors,
-  verifyAuthorBook
+  verifyAuthorBook,
+  verifyBookUnique,
+  verifyReadingListId
 } = require('../middleware/readingLists.middleware')
 
 /**
@@ -192,17 +195,17 @@ router.post(
   verifyToken,
   verifyBody,
   verifyBook,
+  verifyReadingListId,
+  verifyBookUnique,
   verifyAuthors,
   verifyAuthorBook,
-  async (req, res) => {
+  async (req, res, next) => {
     try {
-      const bookAdded = await ReadingListsModel.addBook(
-        res.locals.book.id,
-        req.params.id
-      )
-      if (bookAdded !== null) {
-        res.status(201).json({ bookAdded })
-      }
+      await ReadingListBooksModel.addBook(res.locals.book.id, req.params.id)
+      res.status(201).json({
+        message: `${res.locals.book.title} added to reading list: ${res.locals.readingList.name}`
+      })
+      // }
     } catch (error) {
       error.statusCode = 500
       error.message = 'Error adding book to reading list'
