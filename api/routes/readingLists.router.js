@@ -173,8 +173,9 @@ router.post('/', verifyToken, async (req, res, next) => {
       error.message = 'Error creating reading list'
       next(error)
     }
+  } else {
+    res.status(400).json({ error: 'Missing name of reading list' })
   }
-  res.status(400).json({ error: 'Missing name of reading list' })
 })
 
 /* This route will be used to add a book to a reading list
