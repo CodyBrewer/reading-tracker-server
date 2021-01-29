@@ -43,7 +43,8 @@ const verifyToken = (req, res, next) => {
   if (bearerHeader !== undefined) {
     const bearerToken = bearerHeader.split(' ')[1]
     jwt.verify(bearerToken, process.env.JWT_SECRET, (err, decodedToken) => {
-      if (err !== undefined) {
+      if (err !== null) {
+        console.log({ err })
         const error = new Error('Invalid token')
         error.statusCode = 401
         next(error)
