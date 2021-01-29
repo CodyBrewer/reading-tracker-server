@@ -1,6 +1,8 @@
 const BooksModel = require('../models/books.model')
 const AuthorsModel = require('../models/authors.model')
 const AuthorBooksModel = require('../models/authorBooks.model')
+const ReadingListModel = require('../models/readingLists.model')
+const ReadingListBooksModel = require('../models/readingListBooks.model')
 
 const requiredBookFields = [
   'google_id',
@@ -114,9 +116,23 @@ const verifyAuthorBook = async (req, res, next) => {
   }
 }
 
+const verifyReadingListId = async (req, res, next) => {
+  const { id } = req.params
+  try {
+    const [readingList] = await ReadingListModel.getById(id)
+    res.locals.readingList = readingList
+    next()
+  } catch (error) {
+    error.statusCode = 500
+    error.message = 'Database Error verifying Reading List Id'
+    next(error)
+  }
+}
+
 module.exports = {
   verifyBody,
   verifyBook,
   verifyAuthors,
-  verifyAuthorBook
+  verifyAuthorBook,
+  verifyReadingListId
 }
