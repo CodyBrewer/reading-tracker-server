@@ -51,6 +51,38 @@ const {
  *          description: Array of strings of Author Names
  *          items:
  *            $ref: '#/components/schemas/Author'
+ *    NewBook:
+ *      type: object
+ *      properties:
+ *        id:
+ *          type: integer
+ *          example: 0
+ *        google_id:
+ *          type: string
+ *          description: id used for google books api
+ *          example: "-w3TCwAAQBAJ"
+ *        title:
+ *          type: string
+ *          example: Hamlet
+ *        cover_image:
+ *          type: string
+ *          description: url of cover_image
+ *          example: "https://books.google.com/books/content?id=-w3TCwAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api"
+ *        description:
+ *          type: string
+ *          description: short description of the book
+ *          example: "The acclaimed Shakespeare Play"
+ *        page_count:
+ *          type: integer
+ *          example: 148
+ *        printed_page_count:
+ *          type: integer
+ *          example: 157
+ *        authors:
+ *          type: array
+ *          description: Array of strings of Author Names
+ *          items:
+ *            $ref: '#/components/schemas/Author'
  *    ReadingList:
  *      type: object
  *      properties:
@@ -178,19 +210,6 @@ router.post('/', verifyToken, async (req, res, next) => {
   }
 })
 
-/* This route will be used to add a book to a reading list
-the request body will look like this: {
-"google_id": string, "title": string,
-"cover_image": string, "description": string,
-"page_count": 173 "authors": Array<string>
-} we need to check if the book exists in the books table first
-if it does then we create an entry into the reading_list_books table with the id of the reading_list(grabbed from req.params) and the id of the book.
-if it does not then we need to create an entry into the books table
-then we need to check if each authors are in the authors table if they are
-then we create an entry in the author_books table with the author.id and the book.id then we creat an entry into the reading_list_books table with the id of the reading_list(grabbed from req.params) and the id of the book.
-if they are not then we need to create an entry in the authors table
-then we create an entry in the author_books table with the author.id and the book.id then we create an entry into the reading_list_books table with the id of the reading_list(grabbed from req.params) and the id of the book.
-*/
 router.post(
   '/:id',
   verifyToken,
