@@ -43,8 +43,10 @@ const verifyToken = (req, res, next) => {
   if (bearerHeader !== undefined) {
     const bearerToken = bearerHeader.split(' ')[1]
     jwt.verify(bearerToken, process.env.JWT_SECRET, (err, decodedToken) => {
-      if (err !== null) {
-        res.status(401).json({ error: 'Invalid token' })
+      if (err !== undefined) {
+        const error = new Error('Invalid token')
+        error.statusCode = 401
+        next(error)
       } else {
         res.locals.profile = {
           username: decodedToken.username,
@@ -54,7 +56,9 @@ const verifyToken = (req, res, next) => {
       }
     })
   } else {
-    res.status(403).json({ error: 'missing authorization header' })
+    const error = new Error('missing authorization header')
+    error.statusCode = 403
+    next(error)
   }
 }
 
