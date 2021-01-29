@@ -1,0 +1,2 @@
+- [x] Bug Fix - POST /readingLists/ 400 4.635 ms - 94
+(node:9214) UnhandledPromiseRejectionWarning: Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
