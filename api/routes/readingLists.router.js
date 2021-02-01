@@ -212,7 +212,7 @@ router.post('/', verifyToken, async (req, res, next) => {
 
 /**
  * @swagger
- * /readingLists/:
+ * /readingLists/:id:
  *  post:
  *    description: Add book to reading list
  *    tags:
@@ -228,8 +228,12 @@ router.post('/', verifyToken, async (req, res, next) => {
  *          schema:
  *            $ref: '#/components/schemas/NewBook'
  *    responses:
+ *      401:
+ *        $ref: '#/components/responses/UnauthorizedError'
+ *      409:
+ *        description: "Book already in reading list"
  *      201:
- *
+ *        description: __BookTitle__ added to reading List __ReadingListName__"
  */
 router.post(
   '/:id',
