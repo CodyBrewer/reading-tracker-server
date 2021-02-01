@@ -1,6 +1,5 @@
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const { restart } = require('nodemon')
 const { v4: uuidv4 } = require('uuid')
 const UserModel = require('../models/user.model')
 
