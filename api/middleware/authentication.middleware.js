@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const { restart } = require('nodemon')
 const { v4: uuidv4 } = require('uuid')
 const UserModel = require('../models/user.model')
 
@@ -9,8 +10,8 @@ const verifyUserRegisterBody = (req, res, next) => {
   requiredUserInfo.forEach((property) => {
     if (!Object.prototype.hasOwnProperty.call(req.body, property)) {
       const error = new Error()
-      error.statusCode = 400
       error.message = `Missing Required user property: ${property}`
+      res.status(400)
       next(error)
     }
   })
@@ -32,7 +33,7 @@ const hashPassword = async (req, res, next) => {
       }
     } catch (err) {
       const error = new Error('Error hashing password')
-      error.statusCode = 500
+      res.status(500)
       next(error)
     }
   }
@@ -46,7 +47,7 @@ const verifyToken = (req, res, next) => {
       if (err !== null) {
         console.log({ err })
         const error = new Error('Invalid token')
-        error.statusCode = 401
+        res.status(401)
         next(error)
       } else {
         res.locals.profile = {
@@ -58,7 +59,7 @@ const verifyToken = (req, res, next) => {
     })
   } else {
     const error = new Error('missing authorization header')
-    error.statusCode = 403
+    res.status(403)
     next(error)
   }
 }
@@ -73,7 +74,7 @@ const verifyUserLogin = async (req, res, next) => {
         const validPassword = await bcrypt.compare(password, user.password)
         if (!validPassword) {
           const error = new Error()
-          error.statusCode = 401
+          res.status(401)
           error.message = 'Incorrect username or password'
           next(error)
         }
@@ -81,7 +82,7 @@ const verifyUserLogin = async (req, res, next) => {
         next()
       } else {
         const error = new Error()
-        error.statusCode = 401
+        res.status(401)
         error.message = 'Incorrect username or password'
         next(error)
       }
@@ -90,7 +91,7 @@ const verifyUserLogin = async (req, res, next) => {
     }
   } else {
     const error = new Error()
-    error.statusCode = 400
+    res.status(400)
     error.message = 'Username or password field missing from body'
     next(error)
   }
