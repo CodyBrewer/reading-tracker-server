@@ -1,6 +1,7 @@
 const router = require('express').Router()
 const UserModel = require('../models/user.model')
 const { verifyToken } = require('../middleware/authentication.middleware')
+const { verifyProfile } = require('../middleware/profiles.middleware')
 
 /**
  * @swagger
@@ -56,6 +57,10 @@ router.get('/', verifyToken, async (req, res, next) => {
   } catch (error) {
     next(error)
   }
+})
+
+router.get('/:profileId', verifyToken, verifyProfile, async (req, res) => {
+  res.status(200).json(res.locals.profile)
 })
 
 module.exports = router
