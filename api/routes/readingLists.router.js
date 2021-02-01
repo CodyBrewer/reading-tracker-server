@@ -201,7 +201,7 @@ router.post('/', verifyToken, async (req, res, next) => {
       const created = await ReadingListsModel.create(list)
       res.status(201).json({ created })
     } catch (error) {
-      error.statusCode = 500
+      res.status(500)
       error.message = 'Error creating reading list'
       next(error)
     }
@@ -227,6 +227,9 @@ router.post('/', verifyToken, async (req, res, next) => {
  *        application/json:
  *          schema:
  *            $ref: '#/components/schemas/NewBook'
+ *    responses:
+ *      201:
+ *
  */
 router.post(
   '/:id',
@@ -245,7 +248,7 @@ router.post(
       })
       // }
     } catch (error) {
-      error.statusCode = 500
+      res.status(500)
       error.message = 'Error adding book to reading list'
       next(error)
     }
