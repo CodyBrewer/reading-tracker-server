@@ -17,7 +17,7 @@ const verifyBody = (req, res, next) => {
   requiredBookFields.forEach((property) => {
     if (!Object.prototype.hasOwnProperty.call(req.body, property)) {
       const error = new Error()
-      error.statusCode = 400
+      res.status(400)
       error.message = `Missing Required property: ${property}`
       next(error)
     }
@@ -46,13 +46,13 @@ const verifyBook = async (req, res, next) => {
         }
         next()
       } catch (error) {
-        error.statusCode = 500
+        res.status(500)
         error.message = 'Error creating new book in database'
         next(error)
       }
     }
   } catch (error) {
-    error.statusCode = 500
+    res.status(500)
     error.message = 'Error checking if the book exists in the database'
     next(error)
   }
@@ -84,7 +84,7 @@ const verifyAuthors = async (req, res, next) => {
       res.locals.authors = author
       next()
     } catch (error) {
-      error.statusCode = 500
+      res.status(500)
       error.message = 'Error checking if Authors exist in database'
       next(error)
     }
@@ -129,7 +129,7 @@ const verifyReadingListId = async (req, res, next) => {
       next(error)
     }
   } catch (error) {
-    error.statusCode = 500
+    res.status(500)
     error.message = 'Database Error verifying Reading List Id'
     next(error)
   }
@@ -144,13 +144,13 @@ const verifyBookUnique = async (req, res, next) => {
     })
     if (readingListBook !== undefined) {
       const error = new Error('Book already in reading list')
-      error.statusCode = 409
+      res.status(409)
       next(error)
     } else {
       next()
     }
   } catch (error) {
-    error.statusCode = 500
+    res.status(500)
     error.message = 'Error checking if book is in reading list already'
     next(error)
   }
