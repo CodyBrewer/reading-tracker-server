@@ -120,8 +120,14 @@ const verifyReadingListId = async (req, res, next) => {
   const { id } = req.params
   try {
     const [readingList] = await ReadingListModel.getById(id)
-    res.locals.readingList = readingList
-    next()
+    if (readingList != null) {
+      res.locals.readingList = readingList
+      next()
+    } else {
+      const error = new Error('Reading List Does not exist')
+      res.status(404)
+      next(error)
+    }
   } catch (error) {
     error.statusCode = 500
     error.message = 'Database Error verifying Reading List Id'
