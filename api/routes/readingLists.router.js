@@ -160,7 +160,7 @@ router.get('/', verifyToken, async (req, res) => {
  *  post:
  *    description: creating reading list for authenticated user
  *    tags:
- *      - readingLists
+ *      - reading lists
  *    requestBody:
  *      content:
  *        application/json:
@@ -210,6 +210,24 @@ router.post('/', verifyToken, async (req, res, next) => {
   }
 })
 
+/**
+ * @swagger
+ * /readingLists/:
+ *  post:
+ *    description: Add book to reading list
+ *    tags:
+ *     - reading lists
+ *    parameters:
+ *      id:
+ *        type: integer
+ *        description: Id of reading list to add the book to.
+ *        example: 0
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            $ref: '#/components/schemas/NewBook'
+ */
 router.post(
   '/:id',
   verifyToken,
