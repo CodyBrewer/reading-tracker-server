@@ -124,9 +124,10 @@ const {
  */
 
 router.get('/', verifyToken, async (req, res) => {
+  const profile = res.locals.otherProfile || res.locals.profile
   try {
     const lists = await ReadingListsModel.getAllBy({
-      user_id: res.locals.profile.uuid
+      user_id: profile.uuid
     })
     const readingLists = await Promise.all(
       lists.map(async (list) => {
