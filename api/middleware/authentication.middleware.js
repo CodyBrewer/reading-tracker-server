@@ -44,7 +44,6 @@ const verifyToken = (req, res, next) => {
     const bearerToken = bearerHeader.split(' ')[1]
     jwt.verify(bearerToken, process.env.JWT_SECRET, (err, decodedToken) => {
       if (err !== null) {
-        console.log({ err })
         const error = new Error('Invalid token')
         res.status(401)
         next(error)
@@ -68,7 +67,7 @@ const verifyUserLogin = async (req, res, next) => {
 
   if (username && password) {
     try {
-      const user = await UserModel.getUserBy({ username })
+      const user = await UserModel.getUserPassword({ username })
       if (user) {
         const validPassword = await bcrypt.compare(password, user.password)
         if (!validPassword) {
