@@ -11,7 +11,6 @@ const {
   verifyReadingListId,
   verifyOwner
 } = require('../middleware/readingLists.middleware')
-const { ref } = require('../../config/db')
 
 /**
  * @swagger
@@ -133,22 +132,7 @@ router.get('/', verifyToken, async (req, res) => {
     })
     const readingLists = await Promise.all(
       lists.map(async (list) => {
-        try {
-          let books = await ReadingListsModel.getListBooks(list.id)
-          if (books.length !== undefined) {
-            books = await Promise.all(
-              books.map(async (book) => {
-                const authors = await ReadingListsModel.getBooksAuthors(book.id)
-                const authorNames = authors.map((author) => author.name)
-                return { ...book, authors: authorNames }
-              })
-            )
-            return { ...list, books }
-          }
-          return { ...list, books: [] }
-        } catch (error) {
-          return res.status(500).json({ error: 'database error' })
-        }
+        return await ReadingListsModel.createReadingListObject(list)
       })
     )
     res.status(200).json({ readingLists })
@@ -201,8 +185,9 @@ router.post('/', verifyToken, async (req, res, next) => {
   if (req.body.name) {
     const list = { user_id: res.locals.profile.uuid, name: req.body.name }
     try {
-      const created = await ReadingListsModel.create(list)
-      res.status(201).json({ created })
+      const [created] = await ReadingListsModel.create(list)
+      const readingList = await ReadingListsModel.createReadingListObject(created)
+      res.status(201).json(readingList)
     } catch (error) {
       res.status(500)
       error.message = 'Error creating reading list'
@@ -294,17 +279,8 @@ router.post(
 router.get('/:readingListId', verifyToken, verifyReadingListId, async (req, res) => {
   const { readingList } = res.locals
   try {
-    let books = await ReadingListsModel.getListBooks(res.locals.readingList.id)
-    if (books.length != undefined) {
-      books = await Promise.all(
-        books.map(async (book) => {
-          const authors = await ReadingListsModel.getBooksAuthors(book.id)
-          const authorNames = authors.map((author) => author.name)
-          return { ...book, authors: authorNames }
-        })
-      )
-      res.status(200).json({ ...readingList, books })
-    }
+    const list = await ReadingListsModel.createReadingListObject(readingList)
+    res.json(list)
   } catch (error) {
     res.status(500).json({ error: 'database error' })
   }
@@ -361,7 +337,8 @@ router.patch(
     }
     try {
       const [updated] = await ReadingListsModel.update(req.params.readingListId, req.body)
-      res.json(updated)
+      const list = await ReadingListsModel.createReadingListObject(updated)
+      res.json(list)
     } catch (error) {
       next(error)
     }
