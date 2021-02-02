@@ -124,7 +124,7 @@ const verifyReadingListId = async (req, res, next) => {
       res.locals.readingList = readingList
       next()
     } else {
-      const error = new Error('Reading List Does not exist')
+      const error = new Error('Reading List does not exist')
       res.status(404)
       next(error)
     }
@@ -176,7 +176,7 @@ const verifyToReadingList = async (req, res, next) => {
     try {
       const toReadingList = await ReadingListModel.getById(req.query.toReadingList)
       if (toReadingList == null) {
-        const error = new Error('Requested reading list to move to does not exist')
+        const error = new Error('Requested reading list to move book to does not exist')
         res.status(400)
         next(error)
       }
@@ -187,7 +187,6 @@ const verifyToReadingList = async (req, res, next) => {
         res.status(403)
         next(error)
       }
-
       res.locals.toReadingList = toReadingList
       next()
     } catch (error) {
