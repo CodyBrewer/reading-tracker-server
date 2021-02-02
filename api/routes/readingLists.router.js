@@ -9,7 +9,10 @@ const {
   verifyAuthorBook,
   verifyBookUnique,
   verifyReadingListId,
-  verifyOwner
+  verifyOwner,
+  verifyToReadingList,
+  verifyBookInList,
+  verifyBookNotInToList
 } = require('../middleware/readingLists.middleware')
 
 /**
@@ -135,7 +138,7 @@ router.get('/', verifyToken, async (req, res) => {
         return await ReadingListsModel.createReadingListObject(list)
       })
     )
-    res.status(200).json({ readingLists })
+    res.status(200).json(readingLists)
   } catch (error) {
     res.status(500).json({ error: 'database error' })
   }
@@ -209,6 +212,7 @@ router.post('/', verifyToken, async (req, res, next) => {
  *      required: true
  *      schema:
  *        type: integer
+ *      example: 2
  *
  * /readingLists/:readingListId:
  *  post:
@@ -240,6 +244,7 @@ router.post(
   verifyAuthors,
   verifyAuthorBook,
   async (req, res, next) => {
+    console.table(res.locals)
     try {
       await ReadingListBooksModel.addBook(res.locals.book.id, req.params.readingListId)
       res.status(201).json({
@@ -314,7 +319,7 @@ router.get('/:readingListId', verifyToken, verifyReadingListId, async (req, res)
  *      404:
  *        description: Reading List not found
  *      200:
- *        description: Reading list data after it has been updated
+ *        description: Reading list data after patch changes
  *        content:
  *          application/json:
  *            schema:
@@ -338,6 +343,76 @@ router.patch(
     try {
       const [updated] = await ReadingListsModel.update(req.params.readingListId, req.body)
       const list = await ReadingListsModel.createReadingListObject(updated)
+      res.json(list)
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+/**
+ * @swagger
+ * components:
+ *  parameters:
+ *    BookId:
+ *      in: path
+ *      name: bookId
+ *      required: true
+ *      schema:
+ *        type: integer
+ *      description: ID of Book you want to get
+ *      example: 3
+ *    ToReadingList:
+ *      in: query
+ *      name: toReadingList
+ *      required: true
+ *      schema:
+ *        type: integer
+ *      description: ID of reading list you want to move book to
+ *      example: 3
+ *
+ * /readingLists/:readingListId/:bookId/?toReadingList={toReadingListId}/:
+ *  patch:
+ *    description: Change what reading list a book belongs to by bookId
+ *    tags:
+ *      - reading lists
+ *    parameters:
+ *      - $ref: '#/components/parameters/ReadingListId'
+ *      - $ref: '#/components/parameters/BookId'
+ *      - $ref: '#/components/parameters/ToReadingList'
+ *    responses:
+ *      400:
+ *        description: Requested reading list to move book to does not exist
+ *      401:
+ *        $ref: '#/components/responses/UnauthorizedError'
+ *      403:
+ *        description: Authenticated user does not have access to make changes to reading list
+ *      404:
+ *        description: Reading List does not exist
+ *      409:
+ *        description: Book is already in toReadingList
+ *      422:
+ *        description: Can not update Book is not in reading list
+ *      200:
+ *        description: Reading List data after patch changes
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/ReadingList'
+ */
+router.patch(
+  '/:readingListId/:bookId/',
+  verifyToken,
+  verifyReadingListId,
+  verifyOwner,
+  verifyBookInList,
+  verifyToReadingList,
+  verifyBookNotInToList,
+  async (req, res, next) => {
+    console.table(res.locals)
+    const { bookId, readingList, toReadingList } = res.locals
+    try {
+      await ReadingListBooksModel.changeReadingList(bookId, readingList.id, toReadingList.id)
+      const list = await ReadingListsModel.createReadingListObject(toReadingList)
       res.json(list)
     } catch (error) {
       next(error)
