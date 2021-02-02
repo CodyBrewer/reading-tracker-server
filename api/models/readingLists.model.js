@@ -28,6 +28,21 @@ const getBooksAuthors = (bookId) =>
     .join('authors', 'authors.id', 'author_books.author_id')
     .select('authors.name')
 
+const createReadingListObject = async (list) => {
+  let books = await getListBooks(list.id)
+  if (books.length != null) {
+    books = await Promise.all(
+      books.map(async (book) => {
+        const authors = await getBooksAuthors(book.id)
+        const authorNames = authors.map((author) => author.name)
+        return { ...book, authors: authorNames }
+      })
+    )
+    return { ...list, books }
+  }
+  return { ...list, books: [] }
+}
+
 module.exports = {
   create,
   getAll,
@@ -36,5 +51,6 @@ module.exports = {
   getListBooks,
   getBooksAuthors,
   update,
-  remove
+  remove,
+  createReadingListObject
 }
