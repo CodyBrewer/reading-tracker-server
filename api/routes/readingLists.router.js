@@ -2,7 +2,6 @@ const router = require('express').Router()
 const ReadingListsModel = require('../models/readingLists.model')
 const ReadingListBooksModel = require('../models/readingListBooks.model')
 const BooksModel = require('../models/books.model')
-const { verifyToken } = require('../middleware/authentication.middleware')
 const {
   verifyBook,
   verifyBody,
@@ -128,8 +127,10 @@ const {
  *        $ref: '#/components/responses/UnauthorizedError'
  */
 
-router.get('/', verifyToken, async (req, res) => {
-  const profile = res.locals.otherProfile || res.locals.profile
+router.get('/', async (req, res) => {
+  const profile = res.locals.otherProfile != null ? res.locals.otherProfile : res.locals.profile
+  console.log({ locals: res.locals })
+  console.log({ profile })
   try {
     const lists = await ReadingListsModel.getAllBy({
       user_id: profile.uuid
@@ -185,7 +186,7 @@ router.get('/', verifyToken, async (req, res) => {
  *        description: "Missing name of reading list"
  */
 
-router.post('/', verifyToken, async (req, res, next) => {
+router.post('/', async (req, res, next) => {
   if (req.body.name) {
     const list = { user_id: res.locals.profile.uuid, name: req.body.name }
     try {
@@ -237,7 +238,6 @@ router.post('/', verifyToken, async (req, res, next) => {
  */
 router.post(
   '/:readingListId',
-  verifyToken,
   verifyBody,
   verifyBook,
   verifyReadingListId,
@@ -282,7 +282,7 @@ router.post(
  *        $ref: '#/components/responses/UnauthorizedError'
  */
 
-router.get('/:readingListId', verifyToken, verifyReadingListId, async (req, res) => {
+router.get('/:readingListId', verifyReadingListId, async (req, res) => {
   const { readingList } = res.locals
   try {
     const list = await ReadingListsModel.createReadingListObject(readingList)
@@ -327,29 +327,23 @@ router.get('/:readingListId', verifyToken, verifyReadingListId, async (req, res)
  *              $ref: '#/components/schemas/ReadingList'
  */
 
-router.patch(
-  '/:readingListId',
-  verifyToken,
-  verifyReadingListId,
-  verifyOwner,
-  async (req, res, next) => {
-    // only name should be updated. if id or user_id is sent delete them
-    delete req.body.id
-    delete req.body.user_id
-    if (!req.body.name) {
-      const error = new Error('Missing name property to update reading list')
-      res.status(400)
-      next(error)
-    }
-    try {
-      const [updated] = await ReadingListsModel.update(req.params.readingListId, req.body)
-      const list = await ReadingListsModel.createReadingListObject(updated)
-      res.json(list)
-    } catch (error) {
-      next(error)
-    }
+router.patch('/:readingListId', verifyReadingListId, verifyOwner, async (req, res, next) => {
+  // only name should be updated. if id or user_id is sent delete them
+  delete req.body.id
+  delete req.body.user_id
+  if (!req.body.name) {
+    const error = new Error('Missing name property to update reading list')
+    res.status(400)
+    next(error)
   }
-)
+  try {
+    const [updated] = await ReadingListsModel.update(req.params.readingListId, req.body)
+    const list = await ReadingListsModel.createReadingListObject(updated)
+    res.json(list)
+  } catch (error) {
+    next(error)
+  }
+})
 /**
  * @swagger
  * components:
@@ -402,7 +396,6 @@ router.patch(
  */
 router.patch(
   '/:readingListId/:bookId/',
-  verifyToken,
   verifyReadingListId,
   verifyOwner,
   verifyBookInList,
@@ -451,23 +444,17 @@ router.patch(
  *                  $ref: '#/components/schemas/ReadingList'
  */
 
-router.delete(
-  '/:readingListId',
-  verifyToken,
-  verifyReadingListId,
-  verifyOwner,
-  async (req, res, next) => {
-    const { readingList } = res.locals
-    try {
-      const list = await ReadingListsModel.createReadingListObject(readingList)
-      const deleted = await ReadingListsModel.remove(readingList.id)
-      console.log({ deleted })
-      res.status(200).json({ message: 'deleted reading list', list })
-    } catch (error) {
-      next(error)
-    }
+router.delete('/:readingListId', verifyReadingListId, verifyOwner, async (req, res, next) => {
+  const { readingList } = res.locals
+  try {
+    const list = await ReadingListsModel.createReadingListObject(readingList)
+    const deleted = await ReadingListsModel.remove(readingList.id)
+    console.log({ deleted })
+    res.status(200).json({ message: 'deleted reading list', list })
+  } catch (error) {
+    next(error)
   }
-)
+})
 
 /**
  * @swagger
@@ -506,7 +493,6 @@ router.delete(
 
 router.delete(
   '/:readingListId/:bookId',
-  verifyToken,
   verifyReadingListId,
   verifyOwner,
   verifyBookInList,
