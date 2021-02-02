@@ -174,7 +174,7 @@ const verifyOwner = async (req, res, next) => {
 const verifyToReadingList = async (req, res, next) => {
   if (req.query.toReadingList != null) {
     try {
-      const toReadingList = await ReadingListModel.getById(req.query.to)
+      const toReadingList = await ReadingListModel.getById(req.query.toReadingList)
       if (toReadingList == null) {
         const error = new Error('Requested reading list to move to does not exist')
         res.status(400)
@@ -198,6 +198,25 @@ const verifyToReadingList = async (req, res, next) => {
   }
 }
 
+const verifyBookInList = async (req, res, next) => {
+  const { bookId } = req.params
+  try {
+    const [book] = await ReadingListBooksModel.getBy({
+      book_id: bookId,
+      reading_list_id: res.locals.readingList.id
+    })
+    if (book == null) {
+      error = new Error('Can not update: Book is not in reading list')
+      res.status(422)
+      next(error)
+    }
+    res.locals.bookId = book.book_id
+    next()
+  } catch (error) {
+    next(error)
+  }
+}
+
 module.exports = {
   verifyBody,
   verifyBook,
@@ -206,5 +225,6 @@ module.exports = {
   verifyReadingListId,
   verifyBookUnique,
   verifyOwner,
-  verifyToReadingList
+  verifyToReadingList,
+  verifyBookInList
 }
