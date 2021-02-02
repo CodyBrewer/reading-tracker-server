@@ -117,9 +117,9 @@ const verifyAuthorBook = async (req, res, next) => {
 }
 
 const verifyReadingListId = async (req, res, next) => {
-  const { id } = req.params
+  const { readingListId } = req.params
   try {
-    const [readingList] = await ReadingListModel.getById(id)
+    const [readingList] = await ReadingListModel.getById(readingListId)
     if (readingList != null) {
       res.locals.readingList = readingList
       next()
@@ -140,7 +140,7 @@ const verifyBookUnique = async (req, res, next) => {
   try {
     const [readingListBook] = await ReadingListBooksModel.getBy({
       book_id: book.id,
-      reading_list_id: req.params.id
+      reading_list_id: req.params.readingListId
     })
     if (readingListBook !== undefined) {
       const error = new Error('Book already in reading list')

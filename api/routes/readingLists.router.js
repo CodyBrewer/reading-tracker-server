@@ -216,14 +216,14 @@ router.post('/', verifyToken, async (req, res, next) => {
  * components:
  *  parameters:
  *    ReadingListId:
- *      name: id
+ *      name: readingListId
  *      in: path
  *      description: Numeric ID of the reading list to make the request to
  *      required: true
  *      schema:
  *        type: integer
  *
- * /readingLists/:id:
+ * /readingLists/:readingListId:
  *  post:
  *    description: Add book to reading list
  *    tags:
@@ -244,7 +244,7 @@ router.post('/', verifyToken, async (req, res, next) => {
  *        description: __BookTitle__ added to reading List __ReadingListName__"
  */
 router.post(
-  '/:id',
+  '/:readingListId',
   verifyToken,
   verifyBody,
   verifyBook,
@@ -254,7 +254,10 @@ router.post(
   verifyAuthorBook,
   async (req, res, next) => {
     try {
-      await ReadingListBooksModel.addBook(res.locals.book.id, req.params.id)
+      await ReadingListBooksModel.addBook(
+        res.locals.book.id,
+        req.params.readingListId
+      )
       res.status(201).json({
         message: `${res.locals.book.title} added to reading list: ${res.locals.readingList.name}`
       })
@@ -269,7 +272,7 @@ router.post(
 
 /**
  * @swagger
- * /readingLists/:id:
+ * /readingLists/:readingListId:
  *  get:
  *    description: return reading list with books that belong to the reading list
  *    tags:
@@ -289,23 +292,30 @@ router.post(
  *        $ref: '#/components/responses/UnauthorizedError'
  */
 
-router.get('/:id', verifyToken, verifyReadingListId, async (req, res) => {
-  const { readingList } = res.locals
-  try {
-    let books = await ReadingListsModel.getListBooks(res.locals.readingList.id)
-    if (books.length != undefined) {
-      books = await Promise.all(
-        books.map(async (book) => {
-          const authors = await ReadingListsModel.getBooksAuthors(book.id)
-          const authorNames = authors.map((author) => author.name)
-          return { ...book, authors: authorNames }
-        })
+router.get(
+  '/:readingListId',
+  verifyToken,
+  verifyReadingListId,
+  async (req, res) => {
+    const { readingList } = res.locals
+    try {
+      let books = await ReadingListsModel.getListBooks(
+        res.locals.readingList.id
       )
-      res.status(200).json({ ...readingList, books })
+      if (books.length != undefined) {
+        books = await Promise.all(
+          books.map(async (book) => {
+            const authors = await ReadingListsModel.getBooksAuthors(book.id)
+            const authorNames = authors.map((author) => author.name)
+            return { ...book, authors: authorNames }
+          })
+        )
+        res.status(200).json({ ...readingList, books })
+      }
+    } catch (error) {
+      res.status(500).json({ error: 'database error' })
     }
-  } catch (error) {
-    res.status(500).json({ error: 'database error' })
   }
-})
+)
 
 module.exports = router
