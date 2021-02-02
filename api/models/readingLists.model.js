@@ -6,7 +6,7 @@ const getAll = () => db('reading_lists').select('*')
 
 const getAllBy = (filter) => db('reading_lists').where(filter).select('*')
 
-const getById = (id) => db('reading_lists').where({ id }).select('*')
+const getById = (id) => db('reading_lists').where({ id }).first().select('*')
 
 const update = (id, changes) => {
   db('reading_lists').where({ id }).update(changes).returning('*')
