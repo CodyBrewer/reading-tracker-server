@@ -12,8 +12,10 @@ const update = (id, changes) => {
   return db('reading_lists').where({ id }).first().update(changes).returning('*')
 }
 
-const remove = (id) => {
-  db('reading_lists').where({ id }).first().delete()
+const remove = async (id) => {
+  const list = await getById(id)
+  await db('reading_lists').where({ id }).first().delete()
+  return list
 }
 
 const getListBooks = (listId) =>
