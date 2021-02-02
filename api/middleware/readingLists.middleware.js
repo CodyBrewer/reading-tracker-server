@@ -107,7 +107,7 @@ const verifyAuthorBook = async (req, res, next) => {
     res.locals.authorBooks = authorBooks
     next()
   } else {
-    let bookCheck = await AuthorBooksModel.getAuthorBook(authors[0].id, book.id)
+    let bookCheck = await AuthorBooksModel.getAuthorBook(authors.id, book.id)
     if (!bookCheck) {
       bookCheck = await AuthorBooksModel.addBook(authors[0].id, book.id)
     }
@@ -217,6 +217,24 @@ const verifyBookInList = async (req, res, next) => {
   }
 }
 
+const verifyBookNotInToList = async (req, res, next) => {
+  const { bookId, toReadingList } = res.locals
+  try {
+    const [book] = await ReadingListBooksModel.getBy({
+      book_id: bookId,
+      reading_list_id: toReadingList.id
+    })
+    if (book != null) {
+      const error = new Error('Book is already in toReadingList')
+      res.status(409)
+      next(error)
+    }
+    next()
+  } catch (error) {
+    next(error)
+  }
+}
+
 module.exports = {
   verifyBody,
   verifyBook,
@@ -226,5 +244,6 @@ module.exports = {
   verifyBookUnique,
   verifyOwner,
   verifyToReadingList,
-  verifyBookInList
+  verifyBookInList,
+  verifyBookNotInToList
 }
