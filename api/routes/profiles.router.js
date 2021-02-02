@@ -1,6 +1,5 @@
 const router = require('express').Router()
 const UserModel = require('../models/user.model')
-const { verifyToken } = require('../middleware/authentication.middleware')
 const { verifyProfile } = require('../middleware/profiles.middleware')
 const readingListRouter = require('./readingLists.router')
 /**
@@ -50,7 +49,7 @@ const readingListRouter = require('./readingLists.router')
  *      401:
  *        $ref: '#/components/responses/UnauthorizedError'
  */
-router.get('/', verifyToken, async (req, res, next) => {
+router.get('/', async (req, res, next) => {
   try {
     const publicProfiles = await UserModel.getAllPublic()
     if (publicProfiles.length) {
@@ -94,7 +93,7 @@ router.get('/', verifyToken, async (req, res, next) => {
  *      403:
  *        description: 'User Profile is not public'
  */
-router.get('/:profileId', verifyToken, verifyProfile, (req, res) => {
+router.get('/:profileId', verifyProfile, (req, res) => {
   res.status(200).json(res.locals.otherProfile)
 })
 
