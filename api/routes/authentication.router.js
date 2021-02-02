@@ -68,21 +68,16 @@ const generateToken = require('../utils/generateToken')
  *      400:
  *        description: Data missing from request body __missing_property__
  */
-router.post(
-  '/register',
-  verifyUserRegisterBody,
-  hashPassword,
-  async (req, res, next) => {
-    const { user } = res.locals
-    try {
-      const registered = await UserModel.create(user)
-      const token = await generateToken(registered)
-      res.status(201).json({ token })
-    } catch (error) {
-      next(error)
-    }
+router.post('/register', verifyUserRegisterBody, hashPassword, async (req, res, next) => {
+  const { user } = res.locals
+  try {
+    const registered = await UserModel.create(user)
+    const token = await generateToken(registered)
+    res.status(201).json({ token })
+  } catch (error) {
+    next(error)
   }
-)
+})
 
 /**
  * @swagger
