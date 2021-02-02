@@ -420,4 +420,52 @@ router.patch(
   }
 )
 
+/**
+ * @swagger
+ * /readingLists/:readingListId/:
+ *  delete:
+ *    description: Deletes a Users reading list
+ *    tags:
+ *      - reading lists
+ *    parameters:
+ *      - $ref: '#/components/parameters/ReadingListId'
+ *    responses:
+ *      401:
+ *        $ref: '#/components/responses/UnauthorizedError'
+ *      403:
+ *        description: Authenticated user does not have access to make changes to reading list
+ *      404:
+ *        description: Reading List does not exist
+ *      200:
+ *        description: Deleted reading list data
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  example: deleted reading list
+ *                list:
+ *                  $ref: '#/components/schemas/ReadingList'
+ */
+
+router.delete(
+  '/:readingListId',
+  verifyToken,
+  verifyReadingListId,
+  verifyOwner,
+  async (req, res, next) => {
+    const { readingList } = res.locals
+    try {
+      const list = await ReadingListsModel.createReadingListObject(readingList)
+      const deleted = await ReadingListsModel.remove(readingList.id)
+      console.log({ deleted })
+      res.status(200).json({ message: 'deleted reading list', list })
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
 module.exports = router
