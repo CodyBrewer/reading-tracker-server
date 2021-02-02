@@ -9,7 +9,7 @@ const getAllBy = (filter) => db('reading_lists').where(filter).select('*')
 const getById = (id) => db('reading_lists').where({ id }).first().select('*')
 
 const update = (id, changes) => {
-  db('reading_lists').where({ id }).update(changes).returning('*')
+  return db('reading_lists').where({ id }).first().update(changes).returning('*')
 }
 
 const remove = (id) => {
