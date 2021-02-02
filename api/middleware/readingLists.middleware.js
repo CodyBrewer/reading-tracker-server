@@ -156,11 +156,26 @@ const verifyBookUnique = async (req, res, next) => {
   }
 }
 
+const verifyOwner = async (req, res, next) => {
+  try {
+    const { user_id } = await ReadingListModel.getById(req.params.readingListId)
+    if (user_id !== res.locals.profile.uuid) {
+      const error = new Error('Authenticated user does not have access to this reading list')
+      res.status(403)
+      next(error)
+    }
+    next()
+  } catch (error) {
+    next(error)
+  }
+}
+
 module.exports = {
   verifyBody,
   verifyBook,
   verifyAuthors,
   verifyAuthorBook,
   verifyReadingListId,
-  verifyBookUnique
+  verifyBookUnique,
+  verifyOwner
 }
