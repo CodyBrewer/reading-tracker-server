@@ -1,6 +1,7 @@
 const router = require('express').Router()
 const ReadingListsModel = require('../models/readingLists.model')
 const ReadingListBooksModel = require('../models/readingListBooks.model')
+const BooksModel = require('../models/books.model')
 const { verifyToken } = require('../middleware/authentication.middleware')
 const {
   verifyBook,
@@ -462,6 +463,62 @@ router.delete(
       const deleted = await ReadingListsModel.remove(readingList.id)
       console.log({ deleted })
       res.status(200).json({ message: 'deleted reading list', list })
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
+/**
+ * @swagger
+ * readingLists/:readingListId/:bookId/:
+ *  delete:
+ *    description: Remove a book from a reading list
+ *    tags:
+ *      - reading lists
+ *    parameters:
+ *      - $ref: '#/components/parameters/ReadingListId'
+ *      - $ref: '#/components/parameters/BookId'
+ *    responses:
+ *      401:
+ *        $ref: '#/components/responses/UnauthorizedError'
+ *      403:
+ *        description: Authenticated user does not have access to make changes to reading list
+ *      404:
+ *        description: Reading List does not exist
+ *      422:
+ *        description: Can not update Book is not in reading list
+ *      200:
+ *        description: Book Deleted & Reading List data after delete changes
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  example: deleted book from reading list
+ *                book:
+ *                  $ref: '#/components/schemas/Book'
+ *                readingList:
+ *                  $ref: '#/components/schemas/ReadingList'
+ */
+
+router.delete(
+  '/:readingListId/:bookId',
+  verifyToken,
+  verifyReadingListId,
+  verifyOwner,
+  verifyBookInList,
+  async (req, res, next) => {
+    console.table(res.locals)
+    const { bookId, readingList } = res.locals
+    try {
+      // get the books info
+      const [deletedBook] = await BooksModel.getBy({ id: bookId })
+      await ReadingListBooksModel.remove(bookId, readingList.id)
+      const list = await ReadingListsModel.createReadingListObject(readingList)
+      res.json({ message: 'deleted book from reading list', deletedBook, readingList: list })
     } catch (error) {
       next(error)
     }
