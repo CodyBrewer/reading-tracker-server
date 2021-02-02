@@ -8,8 +8,10 @@ const {
   verifyAuthors,
   verifyAuthorBook,
   verifyBookUnique,
-  verifyReadingListId
+  verifyReadingListId,
+  verifyOwner
 } = require('../middleware/readingLists.middleware')
+const { ref } = require('../../config/db')
 
 /**
  * @swagger
@@ -254,10 +256,7 @@ router.post(
   verifyAuthorBook,
   async (req, res, next) => {
     try {
-      await ReadingListBooksModel.addBook(
-        res.locals.book.id,
-        req.params.readingListId
-      )
+      await ReadingListBooksModel.addBook(res.locals.book.id, req.params.readingListId)
       res.status(201).json({
         message: `${res.locals.book.title} added to reading list: ${res.locals.readingList.name}`
       })
@@ -292,28 +291,79 @@ router.post(
  *        $ref: '#/components/responses/UnauthorizedError'
  */
 
-router.get(
+router.get('/:readingListId', verifyToken, verifyReadingListId, async (req, res) => {
+  const { readingList } = res.locals
+  try {
+    let books = await ReadingListsModel.getListBooks(res.locals.readingList.id)
+    if (books.length != undefined) {
+      books = await Promise.all(
+        books.map(async (book) => {
+          const authors = await ReadingListsModel.getBooksAuthors(book.id)
+          const authorNames = authors.map((author) => author.name)
+          return { ...book, authors: authorNames }
+        })
+      )
+      res.status(200).json({ ...readingList, books })
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'database error' })
+  }
+})
+
+/**
+ * @swagger
+ * /readingLists/:readingListId:
+ *  patch:
+ *    description: Update properties of a reading list
+ *    tags:
+ *      - reading lists
+ *    parameters:
+ *      - $ref: '#/components/parameters/ReadingListId'
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            required:
+ *              - name
+ *            properties:
+ *              name:
+ *                type: string
+ *                example: Star Trek Pocket Books
+ *    responses:
+ *      400:
+ *        description: Missing name property to update
+ *      403:
+ *        description: Authenticated user does not have access to this reading list
+ *      404:
+ *        description: Reading List not found
+ *      200:
+ *        description: Reading list data after it has been updated
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/ReadingList'
+ */
+
+router.patch(
   '/:readingListId',
   verifyToken,
   verifyReadingListId,
-  async (req, res) => {
-    const { readingList } = res.locals
+  verifyOwner,
+  async (req, res, next) => {
+    // only name should be updated. if id or user_id is sent delete them
+    delete req.body.id
+    delete req.body.user_id
+    if (!req.body.name) {
+      const error = new Error('Missing name property to update reading list')
+      res.status(400)
+      next(error)
+    }
     try {
-      let books = await ReadingListsModel.getListBooks(
-        res.locals.readingList.id
-      )
-      if (books.length != undefined) {
-        books = await Promise.all(
-          books.map(async (book) => {
-            const authors = await ReadingListsModel.getBooksAuthors(book.id)
-            const authorNames = authors.map((author) => author.name)
-            return { ...book, authors: authorNames }
-          })
-        )
-        res.status(200).json({ ...readingList, books })
-      }
+      const [updated] = await ReadingListsModel.update(req.params.readingListId, req.body)
+      res.json(updated)
     } catch (error) {
-      res.status(500).json({ error: 'database error' })
+      next(error)
     }
   }
 )
