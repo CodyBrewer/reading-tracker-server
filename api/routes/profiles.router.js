@@ -98,4 +98,47 @@ router.get('/:profileId', verifyToken, verifyProfile, (req, res) => {
   res.status(200).json(res.locals.otherProfile)
 })
 
+/**
+ * @swagger
+ * /profiles/:profileId/readingLists/:
+ *  get:
+ *    description: Get reading lists for a profile if it is public
+ *    tags:
+ *      - profiles
+ *    parameters:
+ *      - $ref: '#/components/parameters/ProfileId'
+ *    responses:
+ *      200:
+ *        description: reading lists data
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/ReadingLists'
+ *      401:
+ *        $ref: '#/components/responses/UnauthorizedError'
+ *      403:
+ *        description: 'User Profile is not public'
+ *
+ * /profiles/:profileId/readingLists/:readingListId/:
+ *  get:
+ *    description: Get reading list by reading list id for a profile if it is public
+ *    tags:
+ *      - profiles
+ *    parameters:
+ *      - $ref: '#/components/parameters/ProfileId'
+ *      - $ref: '#/components/parameters/ReadingListId'
+ *    responses:
+ *      200:
+ *        description: reading list data
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/ReadingLists'
+ *      401:
+ *        $ref: '#/components/responses/UnauthorizedError'
+ *      403:
+ *        description: 'User Profile is not public'
+ */
+router.use('/:profileId/readingLists', verifyProfile, readingListRouter)
+
 module.exports = router
