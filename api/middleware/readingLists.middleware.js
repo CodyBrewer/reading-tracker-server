@@ -136,11 +136,11 @@ const verifyReadingListId = async (req, res, next) => {
 }
 
 const verifyBookUnique = async (req, res, next) => {
-  const { book } = res.locals
+  const { book, readingList } = res.locals
   try {
     const [readingListBook] = await ReadingListBooksModel.getBy({
       book_id: book.id,
-      reading_list_id: req.params.readingListId
+      reading_list_id: readingList.id
     })
     if (readingListBook !== undefined) {
       const error = new Error('Book already in reading list')
@@ -157,8 +157,9 @@ const verifyBookUnique = async (req, res, next) => {
 }
 
 const verifyOwner = async (req, res, next) => {
+  const { readingList } = res.locals
   try {
-    const { user_id } = await ReadingListModel.getById(req.params.readingListId)
+    const { user_id } = await ReadingListModel.getById(readingList.id)
     if (user_id !== res.locals.profile.uuid) {
       const error = new Error('Authenticated user does not have access to this reading list')
       res.status(403)
@@ -170,6 +171,33 @@ const verifyOwner = async (req, res, next) => {
   }
 }
 
+const verifyToReadingList = async (req, res, next) => {
+  if (req.query.toReadingList != null) {
+    try {
+      const toReadingList = await ReadingListModel.getById(req.query.to)
+      if (toReadingList == null) {
+        const error = new Error('Requested reading list to move to does not exist')
+        res.status(400)
+        next(error)
+      }
+      if (toReadingList.user_id !== res.locals.profile.uuid) {
+        const error = new Error(
+          'Authenticated user does not have access to make changes to reading list'
+        )
+        res.status(403)
+        next(error)
+      }
+
+      res.locals.toReadingList = toReadingList
+      next()
+    } catch (error) {
+      next(error)
+    }
+  } else {
+    next()
+  }
+}
+
 module.exports = {
   verifyBody,
   verifyBook,
@@ -177,5 +205,6 @@ module.exports = {
   verifyAuthorBook,
   verifyReadingListId,
   verifyBookUnique,
-  verifyOwner
+  verifyOwner,
+  verifyToReadingList
 }
