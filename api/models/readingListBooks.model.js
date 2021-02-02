@@ -1,4 +1,5 @@
 const db = require('../../config/db')
+const { get } = require('./authors.model')
 
 const getBy = (filter) => db('reading_list_books').where(filter).select('*')
 
@@ -15,9 +16,16 @@ const changeReadingList = async (book_id, reading_list_id, to_list_id) => {
     .returning('*')
 }
 
+const remove = async (book_id, reading_list_id) => {
+  const [book] = await getBy({ book_id, reading_list_id })
+  await db('reading_list_books').where({ id: book.id }).first().delete()
+  return book
+}
+
 module.exports = {
   addBook,
   getBy,
   getByBookId,
-  changeReadingList
+  changeReadingList,
+  remove
 }
