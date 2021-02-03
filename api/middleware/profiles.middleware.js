@@ -1,13 +1,11 @@
 const UserModel = require('../models/user.model')
 
 const verifyProfile = async (req, res, next) => {
-  console.log({ requestedUserId: req.params.profileId })
   try {
     // check if profile exists
     const userProfile = await UserModel.getUserBy({
       uuid: req.params.profileId
     })
-    console.log({ userProfile })
     // if not send 404 profile does not exists
     if (userProfile == null) {
       const error = new Error('User Profile does not exist')
