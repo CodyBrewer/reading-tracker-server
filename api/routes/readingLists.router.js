@@ -137,7 +137,7 @@ const {
  */
 
 router.get('/', async (req, res) => {
-  const profile = res.locals.otherProfile != null ? res.locals.otherProfile : res.locals.profile
+  const profile = res.locals.userProfile != null ? res.locals.userProfile : res.locals.profile
   try {
     const lists = await ReadingListsModel.getAllBy({
       user_id: profile.uuid
