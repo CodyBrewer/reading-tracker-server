@@ -4,7 +4,7 @@ Backend made up of a Node.js Server, Express.js API & PostgreSQL database set up
 
 ## Endpoints
 
-This project is leveraging the swagger-jsdoc and swagger-ui-express libraries to document the endpoints. Documentation is available on the `/api-docs` route.
+This project is leveraging the swagger-jsdoc and swagger-ui-express libraries to document the endpoints. Documentation is available on the `/api-docs` route, [Deployed Documentation](https://reading-tracker-be.herokuapp.com/api-docs)
 
 ## Local Database Set Up
 
