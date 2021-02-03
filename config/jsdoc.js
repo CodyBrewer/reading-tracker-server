@@ -16,6 +16,16 @@ module.exports = {
         description: 'Everything about your status'
       }
     ],
+    servers: [
+      {
+        url: 'https://reading-tracker-be.herokuapp.com',
+        description: 'Deployed Production Server'
+      },
+      {
+        url: 'http://localhost:1337',
+        description: 'Local Development Server'
+      }
+    ],
     components: {
       responses: {
         UnauthorizedError: {
