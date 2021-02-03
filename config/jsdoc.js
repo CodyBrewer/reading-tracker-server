@@ -7,15 +7,9 @@ module.exports = {
       description: 'reading-tracker-backend',
       license: {
         name: 'MIT',
-        url: 'https://en.wikipedia.org/wiki/MIT_License'
+        url: 'https://spdx.org/licenses/MIT.html'
       }
     },
-    tags: [
-      {
-        name: 'status',
-        description: 'Everything about your status'
-      }
-    ],
     servers: [
       {
         url: 'https://reading-tracker-be.herokuapp.com',
