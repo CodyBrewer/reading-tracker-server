@@ -2,6 +2,7 @@ const router = require('express').Router()
 const ReadingListsModel = require('../models/readingLists.model')
 const ReadingListBooksModel = require('../models/readingListBooks.model')
 const BooksModel = require('../models/books.model')
+
 const {
   verifyBook,
   verifyBody,
@@ -12,7 +13,8 @@ const {
   verifyOwner,
   verifyToReadingList,
   verifyBookInList,
-  verifyBookNotInToList
+  verifyBookNotInToList,
+  verifyReadingListIsPublic
 } = require('../middleware/readingLists.middleware')
 
 /**
@@ -279,7 +281,7 @@ router.post(
  *        $ref: '#/components/responses/UnauthorizedError'
  */
 
-router.get('/:readingListId', verifyReadingListId, async (req, res) => {
+router.get('/:readingListId', verifyReadingListId, verifyReadingListIsPublic, async (req, res) => {
   const { readingList } = res.locals
   try {
     const list = await ReadingListsModel.createReadingListObject(readingList)
@@ -383,7 +385,7 @@ router.patch('/:readingListId', verifyReadingListId, verifyOwner, async (req, re
  *      409:
  *        description: Book is already in toReadingList
  *      422:
- *        description: Can not update Book is not in reading list
+ *        description: Book is not in reading list
  *      200:
  *        description: Reading List data after patch changes
  *        content:
@@ -469,7 +471,7 @@ router.delete('/:readingListId', verifyReadingListId, verifyOwner, async (req, r
  *      404:
  *        description: Reading List does not exist
  *      422:
- *        description: Can not update Book is not in reading list
+ *        description: Book is not in reading list
  *      200:
  *        description: Book Deleted & Reading List data after delete changes
  *        content:
@@ -500,6 +502,50 @@ router.delete(
       await ReadingListBooksModel.remove(bookId, readingList.id)
       const list = await ReadingListsModel.createReadingListObject(readingList)
       res.json({ message: 'deleted book from reading list', deletedBook, readingList: list })
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
+/**
+ * @swagger
+ * readingLists/:readingListId/:bookId/:
+ *  get:
+ *    description: Get a book from a reading list
+ *    tags:
+ *      - reading lists
+ *    parameters:
+ *      - $ref: '#/components/parameters/ReadingListId'
+ *      - $ref: '#/components/parameters/BookId'
+ *    responses:
+ *      401:
+ *        $ref: '#/components/responses/UnauthorizedError'
+ *      403:
+ *        description: Authenticated user does not have access to make changes to reading list
+ *      404:
+ *        description: Reading List does not exist
+ *      422:
+ *        description: Book is not in reading list
+ *      200:
+ *        description: Book Deleted & Reading List data after delete changes
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/Book'
+ */
+
+router.get(
+  '/:readingListId/:bookId',
+  verifyReadingListId,
+  verifyReadingListIsPublic,
+  verifyBookInList,
+  async (req, res, next) => {
+    const { bookId } = res.locals
+    try {
+      const [book] = await BooksModel.getBy({ id: bookId })
+      const bookInfo = await BooksModel.createBookObject(book)
+      res.json(bookInfo)
     } catch (error) {
       next(error)
     }
