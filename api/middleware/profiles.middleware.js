@@ -20,7 +20,7 @@ const verifyProfile = async (req, res, next) => {
       next(error)
     }
     // if profile exists and is public set res.locals.userProfile to the profile
-    res.locals.profile = userProfile
+    res.locals.userProfile = userProfile
     next()
   } catch (error) {
     next(error)
