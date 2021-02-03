@@ -8,6 +8,11 @@ module.exports = {
       license: {
         name: 'MIT',
         url: 'https://spdx.org/licenses/MIT.html'
+      },
+      contact: {
+        name: 'Cody Brewer',
+        email: 'codybrewerdev@gmail.com',
+        url: 'https://codybrewer.dev/'
       }
     },
     servers: [
