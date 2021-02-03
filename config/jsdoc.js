@@ -15,6 +15,10 @@ module.exports = {
         url: 'https://codybrewer.dev/'
       }
     },
+    externalDocs: {
+      description: 'Github Repo',
+      url: 'https://github.com/CodyBrewer/reading-tracker-server'
+    },
     servers: [
       {
         url: 'https://reading-tracker-be.herokuapp.com',
