@@ -256,12 +256,13 @@ router.post(
   verifyBody,
   verifyBook,
   verifyReadingListId,
+  verifyOwner,
   verifyBookUnique,
   verifyAuthors,
   verifyAuthorBook,
   async (req, res, next) => {
     try {
-      await ReadingListBooksModel.addBook(res.locals.book.id, req.params.readingListId)
+      await ReadingListBooksModel.addBook(res.locals.book.id, res.locals.readingList.id)
       res.status(201).json({
         message: `${res.locals.book.title} added to reading list: ${res.locals.readingList.name}`
       })
