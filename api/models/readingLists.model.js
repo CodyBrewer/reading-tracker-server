@@ -1,4 +1,5 @@
 const db = require('../../config/db')
+const BooksModel = require('./books.model')
 
 const create = (list) => db('reading_lists').insert(list).returning('*')
 
@@ -24,20 +25,12 @@ const getListBooks = (listId) =>
     .where({ reading_list_id: listId })
     .select('books.*')
 
-const getBooksAuthors = (bookId) =>
-  db('author_books')
-    .where({ book_id: bookId })
-    .join('authors', 'authors.id', 'author_books.author_id')
-    .select('authors.name')
-
 const createReadingListObject = async (list) => {
   let books = await getListBooks(list.id)
   if (books.length != null) {
     books = await Promise.all(
       books.map(async (book) => {
-        const authors = await getBooksAuthors(book.id)
-        const authorNames = authors.map((author) => author.name)
-        return { ...book, authors: authorNames }
+        return await BooksModel.createBookObject(book)
       })
     )
     return { ...list, books }
@@ -51,7 +44,6 @@ module.exports = {
   getAllBy,
   getById,
   getListBooks,
-  getBooksAuthors,
   update,
   remove,
   createReadingListObject
