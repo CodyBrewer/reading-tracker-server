@@ -129,8 +129,6 @@ const {
 
 router.get('/', async (req, res) => {
   const profile = res.locals.otherProfile != null ? res.locals.otherProfile : res.locals.profile
-  console.log({ locals: res.locals })
-  console.log({ profile })
   try {
     const lists = await ReadingListsModel.getAllBy({
       user_id: profile.uuid
@@ -245,7 +243,6 @@ router.post(
   verifyAuthors,
   verifyAuthorBook,
   async (req, res, next) => {
-    console.table(res.locals)
     try {
       await ReadingListBooksModel.addBook(res.locals.book.id, req.params.readingListId)
       res.status(201).json({
@@ -402,7 +399,6 @@ router.patch(
   verifyToReadingList,
   verifyBookNotInToList,
   async (req, res, next) => {
-    console.table(res.locals)
     const { bookId, readingList, toReadingList } = res.locals
     try {
       await ReadingListBooksModel.changeReadingList(bookId, readingList.id, toReadingList.id)
@@ -449,7 +445,6 @@ router.delete('/:readingListId', verifyReadingListId, verifyOwner, async (req, r
   try {
     const list = await ReadingListsModel.createReadingListObject(readingList)
     const deleted = await ReadingListsModel.remove(readingList.id)
-    console.log({ deleted })
     res.status(200).json({ message: 'deleted reading list', list })
   } catch (error) {
     next(error)
@@ -497,11 +492,11 @@ router.delete(
   verifyOwner,
   verifyBookInList,
   async (req, res, next) => {
-    console.table(res.locals)
     const { bookId, readingList } = res.locals
     try {
       // get the books info
-      const [deletedBook] = await BooksModel.getBy({ id: bookId })
+      const [book] = await BooksModel.getBy({ id: bookId })
+      const deletedBook = await BooksModel.createBookObject(book)
       await ReadingListBooksModel.remove(bookId, readingList.id)
       const list = await ReadingListsModel.createReadingListObject(readingList)
       res.json({ message: 'deleted book from reading list', deletedBook, readingList: list })
