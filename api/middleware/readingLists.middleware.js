@@ -205,7 +205,7 @@ const verifyBookInList = async (req, res, next) => {
       reading_list_id: res.locals.readingList.id
     })
     if (book == null) {
-      error = new Error('Can not update: Book is not in reading list')
+      error = new Error('Book is not in reading list')
       res.status(422)
       next(error)
     }
@@ -234,6 +234,21 @@ const verifyBookNotInToList = async (req, res, next) => {
   }
 }
 
+const verifyReadingListIsPublic = async (req, res, next) => {
+  try {
+    const { public, user_id } = res.locals.readingList
+    const { uuid } = res.locals.profile
+    if (user_id !== uuid && public === false) {
+      const error = new Error('Reading List is not public')
+      res.status(403)
+      next(error)
+    }
+    next()
+  } catch (error) {
+    next(error)
+  }
+}
+
 module.exports = {
   verifyBody,
   verifyBook,
@@ -244,5 +259,6 @@ module.exports = {
   verifyOwner,
   verifyToReadingList,
   verifyBookInList,
-  verifyBookNotInToList
+  verifyBookNotInToList,
+  verifyReadingListIsPublic
 }
