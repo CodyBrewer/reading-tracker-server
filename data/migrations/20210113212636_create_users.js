@@ -1,5 +1,4 @@
 exports.up = (knex) =>
-  // eslint-disable-next-line implicit-arrow-linebreak
   knex.schema.createTable('users', (table) => {
     table.increments('id')
     table.uuid('uuid').unique().notNullable()

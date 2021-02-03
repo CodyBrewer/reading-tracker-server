@@ -1,8 +1,16 @@
 const db = require('../../config/db')
 
-const getUserBy = (filter) => db('users').where(filter).first().select('*')
+const getUserPassword = (filter) =>
+  db('users').where(filter).first().select('uuid', 'password')
 
-const getAllPublic = () => db('users').where({ public: true }).select('uuid', 'username')
+const getUserBy = (filter) =>
+  db('users')
+    .where(filter)
+    .first()
+    .select('uuid', 'username', 'avatar_url', 'public')
+
+const getAllPublic = () =>
+  db('users').where({ public: true }).select('uuid', 'username', 'avatar_url')
 
 const create = async (user) => {
   const inserted = await db('users').insert(user)
@@ -13,6 +21,7 @@ const create = async (user) => {
 
 module.exports = {
   getUserBy,
+  getUserPassword,
   getAllPublic,
   create
 }

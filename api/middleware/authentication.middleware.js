@@ -9,22 +9,25 @@ const verifyUserRegisterBody = (req, res, next) => {
   requiredUserInfo.forEach((property) => {
     if (!Object.prototype.hasOwnProperty.call(req.body, property)) {
       const error = new Error()
-      error.statusCode = 400
       error.message = `Missing Required user property: ${property}`
+      res.status(400)
       next(error)
     }
   })
-  req.user = req.body
-  req.user.uuid = uuidv4()
+  res.locals.user = req.body
+  res.locals.user.uuid = uuidv4()
   next()
 }
 
 const hashPassword = async (req, res, next) => {
-  if (req.user) {
+  if (res.locals.user) {
     try {
-      const hash = await bcrypt.hash(req.user.password, Number(process.env.SALT))
-      if (hash !== req.user.password) {
-        req.user.password = hash
+      const hash = await bcrypt.hash(
+        res.locals.user.password,
+        Number(process.env.SALT)
+      )
+      if (hash !== res.locals.user.password) {
+        res.locals.user.password = hash
         next()
       }
     } catch (err) {
@@ -41,14 +44,21 @@ const verifyToken = (req, res, next) => {
     const bearerToken = bearerHeader.split(' ')[1]
     jwt.verify(bearerToken, process.env.JWT_SECRET, (err, decodedToken) => {
       if (err !== null) {
-        res.status(401).json({ error: 'Invalid token' })
+        const error = new Error('Invalid token')
+        res.status(401)
+        next(error)
       } else {
-        req.profile = { username: decodedToken.username, uuid: decodedToken.uuid }
+        res.locals.profile = {
+          username: decodedToken.username,
+          uuid: decodedToken.uuid
+        }
         next()
       }
     })
   } else {
-    res.status(403).json({ error: 'missing authorization header' })
+    const error = new Error('missing authorization header')
+    res.status(403)
+    next(error)
   }
 }
 
@@ -57,27 +67,32 @@ const verifyUserLogin = async (req, res, next) => {
 
   if (username && password) {
     try {
-      const user = await UserModel.getUserBy({ username })
+      const user = await UserModel.getUserPassword({ username })
       if (user) {
         const validPassword = await bcrypt.compare(password, user.password)
         if (!validPassword) {
-          const error = new Error('Incorrect username or password')
+          const error = new Error()
           res.status(401)
+          error.message = 'Incorrect username or password'
           next(error)
         }
-        req.user = { username, password: user.password, uuid: user.uuid }
+        res.locals.user = { username, password: user.password, uuid: user.uuid }
         next()
+      } else {
+        const error = new Error()
+        res.status(401)
+        error.message = 'Incorrect username or password'
+        next(error)
       }
-      const error = new Error('Incorrect username or password')
-      res.status(401)
-      next(error)
     } catch (error) {
       next(error)
     }
+  } else {
+    const error = new Error()
+    res.status(400)
+    error.message = 'Username or password field missing from body'
+    next(error)
   }
-  const error = new Error('Username or password field missing from body')
-  res.status(400)
-  next(error)
 }
 
 module.exports = {
