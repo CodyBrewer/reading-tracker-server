@@ -1,7 +1,7 @@
 const router = require('express').Router()
 const UserModel = require('../models/user.model')
 const { verifyProfile } = require('../middleware/profiles.middleware')
-const readingListRouter = require('./readingLists.router')
+
 /**
  * @swagger
  * components:
@@ -138,6 +138,5 @@ router.get('/:profileId', verifyProfile, (req, res) => {
  *      403:
  *        description: 'User Profile is not public'
  */
-router.use('/:profileId/readingLists', verifyProfile, readingListRouter)
 
 module.exports = router
