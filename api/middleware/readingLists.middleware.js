@@ -109,7 +109,7 @@ const verifyAuthorBook = async (req, res, next) => {
   } else {
     let bookCheck = await AuthorBooksModel.getAuthorBook(authors.id, book.id)
     if (!bookCheck) {
-      bookCheck = await AuthorBooksModel.addBook(authors[0].id, book.id)
+      bookCheck = await AuthorBooksModel.addBook(authors.id, book.id)
     }
     res.locals.authorBooks = bookCheck
     next()
