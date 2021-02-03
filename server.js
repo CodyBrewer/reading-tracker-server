@@ -36,7 +36,7 @@ server.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUIO
 server.use('/status', statusRouter)
 server.use('/auth', authenticationRouter)
 server.use('/profiles', verifyToken, profileRouter)
-server.use('/readingLists', verifyToken, readingListRouter)
+server.use(['/readingLists', '/*/*/readingLists'], verifyToken, readingListRouter)
 
 // 404 not found middleware
 server.use(notFound)
