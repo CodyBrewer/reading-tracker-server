@@ -59,10 +59,14 @@ const {
  *            $ref: '#/components/schemas/Author'
  *    NewBook:
  *      type: object
+ *      required:
+ *        - google_id
+ *        - title
+ *        - cover_image
+ *        - description
+ *        - page_count
+ *        - authors
  *      properties:
- *        id:
- *          type: integer
- *          example: 0
  *        google_id:
  *          type: string
  *          description: id used for google books api
@@ -103,6 +107,9 @@ const {
  *        name:
  *          type: string
  *          example: "reading"
+ *        public:
+ *          type: boolean
+ *          example: true
  *        books:
  *          type: array
  *          description: array of Book objects that belong to the reading list
@@ -157,11 +164,16 @@ router.get('/', async (req, res) => {
  *      content:
  *        application/json:
  *          schema:
+ *            required:
+ *              - name
  *            properties:
  *              name:
  *                type: string
  *                description: name of reading list to created
  *                example: "Want to Read"
+ *              public:
+ *                type: boolean
+ *                example: false
  *    responses:
  *      201:
  *        description: created reading list
@@ -180,6 +192,9 @@ router.get('/', async (req, res) => {
  *                name:
  *                  type: string
  *                  example: "Want to Read"
+ *                public:
+ *                  type: boolean
+ *                  example: false
  *      401:
  *        $ref: '#/components/responses/UnauthorizedError'
  *      400:
