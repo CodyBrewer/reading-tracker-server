@@ -1,6 +1,6 @@
 # Reading Tracker Backend
 
-Backend made up of a Node.js Server, Express.js API & PostgreSQL database set up Knex.js. Used to store data to be used for users to create books lists and tracker their reading progress.
+Backend made up of a Node.js Server, Express.js API & PostgreSQL database set up using Knex.js. Used to store data to be used for users to create books lists and tracker their reading progress.
 
 ## Endpoints
 
