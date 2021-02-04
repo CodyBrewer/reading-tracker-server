@@ -28,8 +28,6 @@
     "jsonwebtoken": "^8.5.1",
     "knex": "^0.21.15",
     "morgan": "^1.10.0",
-    "package-lock.json": "^1.0.0",
-    "package.json": "^2.0.1",
     "pg": "^8.5.1",
     "swagger-jsdoc": "^6.0.1",
     "swagger-ui-express": "^4.1.6",
