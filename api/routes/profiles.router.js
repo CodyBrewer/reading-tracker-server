@@ -13,13 +13,9 @@ const { verifyProfile } = require('../middleware/profiles.middleware')
  *          type: string
  *        uuid:
  *          type: string
- *        avatar_url:
- *          type: string
- *          format: url
  *      example:
  *        username: The_Riker
  *        uuid: 7a97e42c-124c-4e2c-8109-c5ce6e5f77a4
- *        avatar_url: https://upload.wikimedia.org/wikipedia/en/thumb/2/20/WilRiker.jpg/220px-WilRiker.jpg
  *
  * /profiles:
  *   get:
