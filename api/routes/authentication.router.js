@@ -28,7 +28,6 @@ const generateToken = require('../utils/generateToken')
  *        - username
  *        - email
  *        - password
- *        - avatar_url
  *      properties:
  *        username:
  *          type: string
@@ -36,16 +35,11 @@ const generateToken = require('../utils/generateToken')
  *          type: string
  *        password:
  *          type: string
- *        avatar_url:
- *          type: string
- *          description: public url of user avatar
  *      example:
  *        uuid: '7a97e42c-124c-4e2c-8109-c5ce6e5f77a4'
  *        username: 'The_Riker'
  *        email: 'william.t.riker@starfleet.com'
  *        password: '@R33allyG00dP@55w0rd'
- *        avatar_url:
- *          'https://upload.wikimedia.org/wikipedia/en/thumb/2/20/WilRiker.jpg/220px-WilRiker.jpg'
  *
  * /auth/register:
  *  post:
