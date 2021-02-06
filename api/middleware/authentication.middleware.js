@@ -3,10 +3,10 @@ const jwt = require('jsonwebtoken')
 const { v4: uuidv4 } = require('uuid')
 const UserModel = require('../models/user.model')
 
-const requiredUserInfo = ['username', 'email', 'password', 'avatar_url']
+const requiredRegisterInfo = ['username', 'email', 'password']
 
 const verifyUserRegisterBody = (req, res, next) => {
-  requiredUserInfo.forEach((property) => {
+  requiredRegisterInfo.forEach((property) => {
     if (!Object.prototype.hasOwnProperty.call(req.body, property)) {
       const error = new Error()
       error.message = `Missing Required user property: ${property}`
@@ -22,10 +22,7 @@ const verifyUserRegisterBody = (req, res, next) => {
 const hashPassword = async (req, res, next) => {
   if (res.locals.user) {
     try {
-      const hash = await bcrypt.hash(
-        res.locals.user.password,
-        Number(process.env.SALT)
-      )
+      const hash = await bcrypt.hash(res.locals.user.password, Number(process.env.SALT))
       if (hash !== res.locals.user.password) {
         res.locals.user.password = hash
         next()
