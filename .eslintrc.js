@@ -2,18 +2,13 @@ module.exports = {
   env: {
     commonjs: true,
     es2021: true,
-    node: true,
-    'cypress/globals': true
+    node: true
   },
   extends: [
-    'standard'
+    'standard',
+    'plugin:cypress/recommended'
   ],
   parserOptions: {
     ecmaVersion: 12
-  },
-  plugins: [
-    'cypress'
-  ],
-  rules: {
   }
 }
