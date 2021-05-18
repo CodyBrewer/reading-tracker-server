@@ -8,9 +8,6 @@
     "dev": "nodemon index.js",
     "test": "./node_modules/.bin/cypress run"
   },
-  "jest": {
-    "testEnvironment": "node"
-  },
   "keywords": [
     "node",
     "express",
