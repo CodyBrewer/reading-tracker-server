@@ -7,12 +7,12 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "test": "./node_modules/.bin/cypress run",
-    "db:create":"psql -c 'CREATE DATABASE library;'",
+    "db:create": "psql -c 'CREATE DATABASE library;'",
     "db:migrate": "./node_modules/.bin/knex --knexfile=config/knexfile.js migrate:latest",
     "db:rollback": "./node_modules/.bin/knex --knexfile=config/knexfile.js migrate:rollback",
     "db:migrate:create": "./node_modules/.bin/knex --knexfile=config/knexfile.js migrate:make",
     "db:seed": "./node_modules/.bin/knex --knexfile=config/knexfile.js seed:run",
-    "db:seed:create":"./node_modules/.bin/knex --knexfile=config/knexfile.js seed:make"
+    "db:seed:create": "./node_modules/.bin/knex --knexfile=config/knexfile.js seed:make"
   },
   "keywords": [
     "node",
@@ -25,7 +25,6 @@
   "dependencies": {
     "bcrypt": "^5.0.0",
     "cors": "^2.8.5",
-    "cypress": "^7.3.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "helmet": "^4.3.1",
@@ -38,8 +37,8 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "cypress": "^7.3.0",
     "eslint": "^7.18.0",
-    "eslint-config-airbnb-base": "^14.2.1",
     "eslint-config-standard": "^16.0.2",
     "eslint-plugin-cypress": "^2.11.3",
     "eslint-plugin-import": "^2.22.1",
