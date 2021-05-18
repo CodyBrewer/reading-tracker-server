@@ -3,7 +3,7 @@ module.exports = {
     commonjs: true,
     es2021: true,
     node: true,
-    jest: true
+    'cypress/globals': true
   },
   extends: [
     'standard'
@@ -11,6 +11,9 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 12
   },
+  plugins: [
+    'cypress'
+  ],
   rules: {
   }
 }
