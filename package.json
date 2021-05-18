@@ -4,9 +4,9 @@
   "description": "express server with postgresql backend for managing data for a reading tracker app",
   "main": "index.js",
   "scripts": {
-    "test": "jest --watchAll",
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "test": "./node_modules/.bin/cypress run"
   },
   "jest": {
     "testEnvironment": "node"
