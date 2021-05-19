@@ -16,7 +16,7 @@ module.exports = {
       }
     },
     externalDocs: {
-      description: 'Github Repo',
+      description: 'Git Repository',
       url: 'https://github.com/CodyBrewer/reading-tracker-server'
     },
     servers: [
