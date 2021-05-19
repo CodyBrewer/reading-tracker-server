@@ -30,7 +30,7 @@ server.use(
 server.use(express.json())
 server.use(process.env.NODE_ENV === 'production' ? logger('common') : logger('dev'))
 
-server.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUIOptions))
+server.use('/', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUIOptions))
 
 // application routes
 server.use('/status', statusRouter)
