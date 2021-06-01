@@ -25,7 +25,7 @@ Install dependencies with the command `npm install`
 * [dotenv](https://www.npmjs.com/package/dotenv): loads variables from env file
 * [express](https://www.npmjs.com/package/express): minimalist web framework
 * [helmet](https://www.npmjs.com/package/helmet): secures http headers
-* [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken): implmentation of json web tokens
+* [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken): implementation of json web tokens
 * [knex](https://www.npmjs.com/package/knex): SQL query builder
 * [morgan](https://www.npmjs.com/package/morgan): HTTP request logger middleware
 * [pg](https://www.npmjs.com/package/pg): PostgreSQL client
